@@ -1,0 +1,19 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "report",
+            "type": "python",
+            "request": "launch",
+            "program": "report_gen.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": [
+                "./reports/230922_AAV9-ELISA_fff_GN004360-086"
+            ]
+        }
+    ]
+}
