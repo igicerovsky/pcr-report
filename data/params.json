@@ -1,5 +1,53 @@
 {
-    "limits": {
-        "IDT": {}
+    "assesmentCriteria": {
+        "cvThreshold": 0.2,
+        "IDT": {
+            "plasmidControl": {
+                "mean": 6.20e+10,
+                "sd": 6.81e+9,
+                "rsd": 10.98,
+                "minus1s": 5.52e+10,
+                "plus1s": 6.68e+10,
+                "minus2s": 4.84e10,
+                "plus2s": 7.56e+10,
+                "minus3s": 4.16e+10,
+                "plus3s": 8.24e+10
+            },
+            "referenceControl": {
+                "mean": 1.32e+11,
+                "sd": 1.97e+10,
+                "rsd": 15.01,
+                "minus1s": 1.12e+11,
+                "plus1s": 1.51e+11,
+                "minus2s": 9.20e+10,
+                "plus2s": 1.71e+11,
+                "minus3s": 7.23e+10,
+                "plus3s": 1.91e+11
+            }
+        },
+        "ITR": {
+            "plasmidControl": {
+                "mean": 5.94e+10,
+                "sd": 6.77e+09,
+                "rsd": 11.40,
+                "minus1s": 5.26e+10,
+                "plus1s": 6.62e+10,
+                "minus2s": 4.59e10,
+                "plus2s": 7.30e+10,
+                "minus3s": 9.31e+10,
+                "plus3s": 7.97e+10
+            },
+            "referenceControl": {
+                "mean": 1.87e+11,
+                "sd": 2.14e+10,
+                "rsd": 11.46,
+                "minus1s": 1.65e+11,
+                "plus1s": 2.08e+11,
+                "minus2s": 1.44e+11,
+                "plus2s": 2.30e+11,
+                "minus3s": 1.23e+11,
+                "plus3s": 2.51e+11
+            }
+        }
     }
 }
