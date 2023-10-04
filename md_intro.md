@@ -1,7 +1,6 @@
-# ddPCR
+# ddPCR GN004308-086
 
 Author: Fabian Knofl  
-GN004308-086
 ____________
 
 ## Objective

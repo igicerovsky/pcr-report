@@ -1,0 +1,11 @@
+{
+    "pandoc_bin": "c:/work/pandoc/pandoc",
+    "pdflatex_bin": "c:/Users/hwn6193/AppData/Local/Programs/MiKTeX/miktex/bin/x64/pdflatex",
+    "reference_docx": "./data/custom-reference.docx",
+    "data_dir": "./data",
+    "params_filename": "./data/params.json",
+    "plate_layout_id": "./data/plate_layout_ident.csv",
+    "plate_layout_num": "./data/plate_layout_num.csv",
+    "plate_layout_dil_id": "./data/plate_layout_dil_id.csv",
+    "numeric_warning_disable": true
+}

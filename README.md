@@ -23,26 +23,18 @@ To build a `pcrep` library execute following command:
 python -m build --sdist --wheel
 ```
 
-## Running the script
-
-`DIR_NAME` is path to a folder with finished Hamilton analysis, e.g. `C:/work/report-gen/reports/230426_AAV9-ELISA_igi_GN004240-033`  
-The working directory **must** contain following files in given format:  
-
-- `[DATE]_[GN]_-_worklist-ELISA.xls`
-- `[DATE]_[GN]_-_[PROTOCOL]_Parameters.csv`
-
-where `[DATE]` is a date in format `%y%m%d` (*230801*)  
-`[GN]` is analysis identifier (*GN004240-033*)  
-`[PROTOCOL]` is a protocol name (*AAV9-ELISA*)
-
-Examples:  
-`230426_GN004240-033_-_worklist-ELISA.xls`  
-`230426_GN004240-033_-_AAV9-ELISA_Parameters.csv`
-
-### Running with exported photometer `txt` data
+### Running with exported `csv` data
 
 This is a prefered way to run the preocessing of the results and following report generation.
 
 ```bash
-python report_gen.py ./DIR_NAME
+python todo.py param
 ```
+
+## Notes
+
+- same units everywhere (SOP SOP-051000) [vg/μl]; excell [ml]
+- look up tables: thinking in 'computer / programmer' way so that thinks could be indexed, automatically found (sample types, ...)
+- CSV delimiter
+- unify naming convention (lowercase/camelcase, separator, datetime format, ...)
+- 
