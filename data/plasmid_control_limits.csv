@@ -1,4 +1,4 @@
-Target,mean,upper 2s warning,lower 2s warning, upper 3s action,lower 3s action
+Target,mean,upper 2s warning,lower 2s warning,upper 3s action,lower 3s action
 IDT,6.20E+10,7.56E+10,4.84E+10,8.24E+10,4.16E+10
 FVIII,2.04E+10,3.12E+10,9.66E+09,3.66E+10,4.27E+09
 HT2,1.92E+11,2.33E+11,1.51E+11,2.54E+11,1.31E+11
