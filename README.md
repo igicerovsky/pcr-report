@@ -2,6 +2,23 @@
 
 Python project for automatic report generation from PCR measurements.
 
+## Configuration files
+
+### *_conc.csv
+
+Sheet is used as look up table for sample indexing.
+
+File shall contain `sample_id`, `type`,`name`, `dilution` where
+
+- `sample_id`: integer, number of sample
+- `type`: string, sample ty on of
+  - `nc`: negative control
+  - `pc`: plasmid control
+  - `s`: sample
+  - **TODO: add if necessary, shall be added to the code!**
+- `name`: string, sample name
+- `dilution`: float, final dilution
+
 ## Prerequisities
 
 To install python libraries use

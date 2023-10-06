@@ -1,22 +1,23 @@
-﻿Negative control nuclease free dH20,1.00E+02
-Plasmid control (pXL029_SacI),2.86E+04
-Reference control (PP073_1933_FDP) ,5.00E+04
-1.1A,5.00E+05
-2.12,5.00E+04
-2.19,5.00E+05
-5.35A,5.00E+05
-5.36A,5.00E+05
-5.37A,5.00E+05
-5.38A,5.00E+05
-5.39A,5.00E+05
-5.40,5.00E+05
-5.41,5.00E+05
-5.42,5.00E+05
-5.43,5.00E+05
-"FF_028_A003_c04_BDS 6m, +4°C",5.00E+06
-"FF_028_A003_c04_FDP 6m, -60°C",5.00E+06
-Plasmid control (pXL029_SacI) -DNase,2.86E+04
-Plasmid control (pXL029_SacI),2.86E+04
-Reference control (PP073_1933_FDP) ,5.00E+04
-Reference control (PP073_1933_FDP) ,5.00E+04
-Negative control nuclease free dH20,1.00E+02
+﻿sample_id,type,Sample name,final dilution factor
+1,nc,Negative control nuclease free dH20,1.00E+02
+2,pc,Plasmid control (pXL029_SacI),2.86E+04
+3,rc,Reference control (PP073_1933_FDP) ,5.00E+04
+4,s,1.1A,5.00E+05
+5,s,2.12,5.00E+04
+6,s,2.19,5.00E+05
+7,s,5.35A,5.00E+05
+8,s,5.36A,5.00E+05
+9,s,5.37A,5.00E+05
+10,s,5.38A,5.00E+05
+11,s,5.39A,5.00E+05
+12,s,5.40,5.00E+05
+13,s,5.41,5.00E+05
+14,s,5.42,5.00E+05
+15,s,5.43,5.00E+05
+16,s,"FF_028_A003_c04_BDS 6m, +4°C",5.00E+06
+17,s,"FF_028_A003_c04_FDP 6m, -60°C",5.00E+06
+18,s,Plasmid control (pXL029_SacI) -DNase,2.86E+04
+19,s,Plasmid control (pXL029_SacI),2.86E+04
+20,s,Reference control (PP073_1933_FDP) ,5.00E+04
+21,s,Reference control (PP073_1933_FDP) ,5.00E+04
+22,s,Negative control nuclease free dH20,1.00E+02
