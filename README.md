@@ -48,10 +48,32 @@ This is a prefered way to run the preocessing of the results and following repor
 python todo.py param
 ```
 
+## Check the data
+
+### Method check
+
+Method check is applied to original device output data column `Conc(copies/µL)` using data from file `./data/method_limits.csv`.
+
+![method check](./media/method_check.png)
+
+### Number of droplets check
+
+NUmber of droplets check is defined by minimum number of total droplets and is applied to column `Accepted Droplets` of the device original data.
+
+### Control limit checks
+
+Controll limits checkare aplliet to reference `rc` and plasmid control `pc`. Column used for check is computed method result `vg/ml`.
+![method check](./media/control_check.png)
+
+### Coefficient of variation (CV)
+
+Is applied to multiple target PRC samples and controls plasmid control `pc` and reference control `rc`.
+
 ## Notes
 
 - same units everywhere (SOP SOP-051000) [vg/μl]; excell [ml]
 - look up tables: thinking in 'computer / programmer' way so that thinks could be indexed, automatically found (sample types, ...)
 - CSV delimiter
 - unify naming convention (lowercase/camelcase, separator, datetime format, ...)
+- UNITS: compute in SOP and  device units (shall be the same). Do units conversion at the very end for desired customer output.  
 - 
