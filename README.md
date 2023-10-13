@@ -67,7 +67,7 @@ Controll limits checkare aplliet to reference `rc` and plasmid control `pc`. Col
 
 ### Coefficient of variation (CV)
 
-Is applied to multiple target PRC samples and controls plasmid control `pc` and reference control `rc`.
+Is applied to multiple target PCR samples and controls, plasmid control `pc` and reference control `rc`.
 
 ## Notes
 
