@@ -1,3 +1,7 @@
 # PCR report generation
 
-todo...
+## TODO
+
+- columns order
+
+## DONE

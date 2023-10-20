@@ -25,12 +25,12 @@ class CheckType(str, Enum):
     CV = 'CV'
 
 
-def check_limits(min, max, val, type):
+def check_limits(min, max, val, txt):
     comment = None
     if val < min:
-        comment = f'{type} {val} < {min}'
+        comment = '{} {:.2f} < {}'.format(txt, val, min)
     elif val > max:
-        comment = f'{type} {val} > {max}'
+        comment = '{} {:.2f} > {}'.format(txt, val, max)
     return comment
 
 
@@ -96,7 +96,7 @@ def method_check_routing(limits, type, val, target_id):
             METHOD_LIMIT_MULTIPLIER_NEGATIVE_CONTROL
         ret = method_check_nc(t, val)
     elif type == 'rc' or type == 'pc' or type == 's':
-        ret = method_check_s(limits.loc[target_id], val, type)
+        ret = method_check_s(limits.loc[target_id], val, type, 'LOQ')
     else:
         raise Exception(f'Invalid sample type {type} in check_routing!')
 
@@ -115,16 +115,16 @@ def method_check_nc(thr, val):
     """
     comment = None
     if val > thr:
-        comment = f'nc > threshold ({val} > {thr})'
+        comment = 'nc {:.2f} > {}'.format(val, thr)
     return comment
 
 
-def method_check_s(limits, val, type):
+def method_check_s(limits, val, type, txt=None):
     """Check sample
     """
 
     return check_limits(limits[MIN_METHOD_NAME],
-                        limits[MAX_METHOD_NAME], val, type)
+                        limits[MAX_METHOD_NAME], val, txt + type)
 
 
 def droplets_check(droplets_num: int, low_thr: int):
@@ -140,7 +140,8 @@ def droplets_check(droplets_num: int, low_thr: int):
 
     comment = None
     if droplets_num < low_thr:
-        comment = f'droplets < threshold ({droplets_num} < {low_thr})'
+        comment = 'droplets {:.0f} < {}'.format(
+            droplets_num, low_thr)
     return comment
 
 
@@ -156,5 +157,5 @@ def cv_check(val, thr=CV_THRESHOLD):
     """
     comment = None
     if val > thr:
-        comment = f'CV > threshold ({val} > {thr})'
+        comment = 'CV {:.1f} > {:.1f}'.format(val, thr)
     return comment
