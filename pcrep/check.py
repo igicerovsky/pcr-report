@@ -34,6 +34,15 @@ def check_limits(min, max, val, txt):
     return comment
 
 
+def check_wlimits(min3s, min2s, max2s, max3s, val, txt):
+    comment = None
+    if val > min3s and val < min2s:
+        comment = '{} {:0.2f} < {:.2f} < {:.2f}'.format(txt, min3s, val, min2s)
+    elif val > max2s and val < max3s:
+        comment = '{} {:.2f} < {:.2f} < {:.2f}'.format(txt, max2s, val, max3s)
+    return comment
+
+
 def check_control(limits, val, type):
     """Check control (reference or plasmid)
 
@@ -46,10 +55,30 @@ def check_control(limits, val, type):
         Control type
     """
     r3s = check_limits(limits[MIN_3S_NAME], limits[MAX_3S_NAME], val, type)
-    # TODO: add warming limits
-    # r2s = check_limits(limits[MIN_2S_NAME], limits[MAX_2S_NAME], val, type)
+    if not r3s:
+        r2s = check_wlimits(limits[MIN_3S_NAME], limits[MIN_2S_NAME],
+                            limits[MAX_2S_NAME], limits[MAX_3S_NAME],
+                            val, type)
 
-    return r3s
+    return r3s, r2s
+
+
+def check_warn(limits, val, type):
+    """Check warning limits
+
+    Parameters:
+    -----------
+    limits: pandas.series
+    val: float
+        Value to check
+    type: str
+        Control type
+    """
+    r2s = check_wlimits(limits[MIN_3S_NAME], limits[MIN_2S_NAME],
+                        limits[MAX_2S_NAME], limits[MAX_3S_NAME],
+                        val, type)
+
+    return r2s
 
 
 def control_check_routing(limitsdc, type, val, target_id):
@@ -68,9 +97,11 @@ def control_check_routing(limitsdc, type, val, target_id):
     """
     ret = None
     if type == 'rc':
-        check_control(limitsdc['reference_control'].loc[target_id], val, type)
+        ret = check_control(
+            limitsdc['reference_control'].loc[target_id], val, type)
     elif type == 'pc':
-        check_control(limitsdc['plasmid_control'].loc[target_id], val, type)
+        ret = check_control(
+            limitsdc['plasmid_control'].loc[target_id], val, type)
 
     return ret
 
