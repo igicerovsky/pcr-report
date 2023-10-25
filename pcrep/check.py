@@ -6,8 +6,8 @@ from enum import Enum
 METHOD_LIMIT_MULTIPLIER_NEGATIVE_CONTROL = 0.1
 MIN_3S_NAME = 'lower 3s action'
 MAX_3S_NAME = 'upper 3s action'
-MIN_2S_NAME = 'lower 3s warning'
-MAX_2S_NAME = 'upper 3s warning'
+MIN_2S_NAME = 'lower 2s warning'
+MAX_2S_NAME = 'upper 2s warning'
 MIN_METHOD_NAME = 'Lower [vg/μl]'
 MAX_METHOD_NAME = 'Upper [vg/μl]'
 CV_THRESHOLD = 20.0  # in %
@@ -25,12 +25,18 @@ class CheckType(str, Enum):
     CV = 'CV'
 
 
-def check_limits(min, max, val, txt):
+def check_limits(min, max, val, txt, ex=False):
     comment = None
     if val < min:
-        comment = '{} {:.2f} < {}'.format(txt, val, min)
+        if ex:
+            comment = '{} {:.2f} < {}'.format(txt, val, min)
+        else:
+            comment = '<{}'.format(txt, val, min)
     elif val > max:
-        comment = '{} {:.2f} > {}'.format(txt, val, max)
+        if ex:
+            comment = '{} {:.2f} > {}'.format(txt, val, max)
+        else:
+            comment = '>{}'.format(txt, val, max)
     return comment
 
 
@@ -55,12 +61,13 @@ def check_control(limits, val, type):
         Control type
     """
     r3s = check_limits(limits[MIN_3S_NAME], limits[MAX_3S_NAME], val, type)
+    r2s = None
     if not r3s:
         r2s = check_wlimits(limits[MIN_3S_NAME], limits[MIN_2S_NAME],
                             limits[MAX_2S_NAME], limits[MAX_3S_NAME],
                             val, type)
 
-    return r3s, r2s
+    return r3s
 
 
 def check_warn(limits, val, type):
@@ -134,7 +141,7 @@ def method_check_routing(limits, type, val, target_id):
     return ret
 
 
-def method_check_nc(thr, val):
+def method_check_nc(thr, val, ex=False):
     """Check negative control
 
     Parameters:
@@ -146,7 +153,10 @@ def method_check_nc(thr, val):
     """
     comment = None
     if val > thr:
-        comment = 'nc {:.2f} > {}'.format(val, thr)
+        if ex:
+            comment = 'nc {:.2f} > {}'.format(val, thr)
+        else:
+            comment = 'nc > {}'.format(thr)
     return comment
 
 
@@ -155,10 +165,11 @@ def method_check_s(limits, val, type, txt=None):
     """
 
     return check_limits(limits[MIN_METHOD_NAME],
-                        limits[MAX_METHOD_NAME], val, txt + type)
+                        limits[MAX_METHOD_NAME], val, txt)
+    # limits[MAX_METHOD_NAME], val, txt + type)
 
 
-def droplets_check(droplets_num: int, low_thr: int):
+def droplets_check(droplets_num: int, low_thr: int, ex: bool = False):
     """Check number of droplets
 
     Parameters:
@@ -171,12 +182,15 @@ def droplets_check(droplets_num: int, low_thr: int):
 
     comment = None
     if droplets_num < low_thr:
-        comment = 'droplets {:.0f} < {}'.format(
-            droplets_num, low_thr)
+        if ex:
+            comment = 'droplets {:.0f} < {}'.format(
+                droplets_num, low_thr)
+        else:
+            comment = 'droplets < {}'.format(low_thr)
     return comment
 
 
-def cv_check(val, thr=CV_THRESHOLD):
+def cv_check(val, thr=CV_THRESHOLD, ex=False):
     """Coefficient of variation check
 
     Parameters:
@@ -188,5 +202,8 @@ def cv_check(val, thr=CV_THRESHOLD):
     """
     comment = None
     if val > thr:
-        comment = 'CV {:.1f} > {:.1f}'.format(val, thr)
+        if ex:
+            comment = 'CV {:.1f} > {:.1f}'.format(val, thr)
+        else:
+            comment = 'CV>{:.0f}%'.format(thr)
     return comment
