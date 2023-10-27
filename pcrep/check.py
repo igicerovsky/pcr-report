@@ -11,6 +11,7 @@ MAX_2S_NAME = 'upper 2s warning'
 MIN_METHOD_NAME = 'Lower [vg/μl]'
 MAX_METHOD_NAME = 'Upper [vg/μl]'
 CV_THRESHOLD = 20.0  # in %
+WARN_INFO = 'for information'
 
 
 class CheckLevel(int, Enum):
@@ -40,12 +41,20 @@ def check_limits(min, max, val, txt, ex=False):
     return comment
 
 
-def check_wlimits(min3s, min2s, max2s, max3s, val, txt):
+def check_wlimits(min3s, min2s, max2s, max3s, val, txt, ex=False):
     comment = None
     if val > min3s and val < min2s:
-        comment = '{} {:0.2f} < {:.2f} < {:.2f}'.format(txt, min3s, val, min2s)
+        if ex:
+            comment = '{} {:0.2f} < {:.2f} < {:.2f}'.format(
+                txt, min3s, val, min2s)
+        else:
+            comment = txt
     elif val > max2s and val < max3s:
-        comment = '{} {:.2f} < {:.2f} < {:.2f}'.format(txt, max2s, val, max3s)
+        if ex:
+            comment = '{} {:.2f} < {:.2f} < {:.2f}'.format(
+                txt, max2s, val, max3s)
+        else:
+            comment = txt
     return comment
 
 
@@ -65,27 +74,9 @@ def check_control(limits, val, type):
     if not r3s:
         r2s = check_wlimits(limits[MIN_3S_NAME], limits[MIN_2S_NAME],
                             limits[MAX_2S_NAME], limits[MAX_3S_NAME],
-                            val, type)
+                            val, WARN_INFO)
 
-    return r3s
-
-
-def check_warn(limits, val, type):
-    """Check warning limits
-
-    Parameters:
-    -----------
-    limits: pandas.series
-    val: float
-        Value to check
-    type: str
-        Control type
-    """
-    r2s = check_wlimits(limits[MIN_3S_NAME], limits[MIN_2S_NAME],
-                        limits[MAX_2S_NAME], limits[MAX_3S_NAME],
-                        val, type)
-
-    return r2s
+    return (r3s, r2s)
 
 
 def control_check_routing(limitsdc, type, val, target_id):
@@ -102,41 +93,13 @@ def control_check_routing(limitsdc, type, val, target_id):
     target_id: str
         Method target one of target_id from method_limits.csv
     """
-    ret = None
+    ret = (None, None)
     if type == 'rc':
         ret = check_control(
             limitsdc['reference_control'].loc[target_id], val, type)
     elif type == 'pc':
         ret = check_control(
             limitsdc['plasmid_control'].loc[target_id], val, type)
-
-    return ret
-
-
-def method_check_routing(limits, type, val, target_id):
-    """Routing of METHOD checks
-
-    Parameters:
-    -----------
-    limitsdc: disctionary
-        Dictionary with limits
-    type: str
-        Sample type one of 'nc', 'pc', 'rc', 's'
-    val: float
-        Value to check
-    target_id: str
-        Method target one of target_id from method_limits.csv
-    """
-    ret = None
-    if type == 'nc':
-        # order of magnitude lower than negative control limits
-        t = limits.loc[target_id][MIN_METHOD_NAME] * \
-            METHOD_LIMIT_MULTIPLIER_NEGATIVE_CONTROL
-        ret = method_check_nc(t, val)
-    elif type == 'rc' or type == 'pc' or type == 's':
-        ret = method_check_s(limits.loc[target_id], val, type, 'LOQ')
-    else:
-        raise Exception(f'Invalid sample type {type} in check_routing!')
 
     return ret
 
@@ -166,7 +129,34 @@ def method_check_s(limits, val, type, txt=None):
 
     return check_limits(limits[MIN_METHOD_NAME],
                         limits[MAX_METHOD_NAME], val, txt)
-    # limits[MAX_METHOD_NAME], val, txt + type)
+
+
+def method_check_routing(limits, type, val, target_id):
+    """Routing of METHOD checks
+
+    Parameters:
+    -----------
+    limitsdc: disctionary
+        Dictionary with limits
+    type: str
+        Sample type one of 'nc', 'pc', 'rc', 's'
+    val: float
+        Value to check
+    target_id: str
+        Method target one of target_id from method_limits.csv
+    """
+    ret = None
+    if type == 'nc':
+        # order of magnitude lower than negative control limits
+        t = limits.loc[target_id][MIN_METHOD_NAME] * \
+            METHOD_LIMIT_MULTIPLIER_NEGATIVE_CONTROL
+        ret = method_check_nc(t, val)
+    elif type == 'rc' or type == 'pc' or type == 's':
+        ret = method_check_s(limits.loc[target_id], val, type, 'LOQ')
+    else:
+        raise Exception(f'Invalid sample type {type} in check_routing!')
+
+    return ret
 
 
 def droplets_check(droplets_num: int, low_thr: int, ex: bool = False):
