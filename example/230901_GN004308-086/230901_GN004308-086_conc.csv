@@ -16,8 +16,8 @@
 15,s,5.43,5.00E+05
 16,s,"FF_028_A003_c04_BDS 6m, +4°C",5.00E+06
 17,s,"FF_028_A003_c04_FDP 6m, -60°C",5.00E+06
-18,s,Plasmid control (pXL029_SacI) -DNase,2.86E+04
-19,s,Plasmid control (pXL029_SacI),2.86E+04
-20,s,Reference control (PP073_1933_FDP) ,5.00E+04
-21,s,Reference control (PP073_1933_FDP) ,5.00E+04
-22,s,Negative control nuclease free dH20,1.00E+02
+18,pc,Plasmid control (pXL029_SacI) -DNase,2.86E+04
+19,pc,Plasmid control (pXL029_SacI),2.86E+04
+20,rc,Reference control (PP073_1933_FDP) ,5.00E+04
+21,rc,Reference control (PP073_1933_FDP) ,5.00E+04
+22,nc,Negative control nuclease free dH20,1.00E+02
