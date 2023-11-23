@@ -1,0 +1,9 @@
+DIL_FINAL_FACTOR_NAME = 'final dilution factor'
+DIL_SAMPLE_DESCRIPTION_NAME = 'Sample name'
+DIL_TYPE_NAME = 'type'
+CONC_NAME = 'Conc(copies/µL)'
+FDL_NAME = "final dilution factor"
+SAMPLE_NAME = "Sample"
+SAMPLE_TYPE_NAME = "sample type"
+SAMPLE_NUM_NAME = "Sample description 1"
+WELL_RESULT_NAME = 'vg/ml'
