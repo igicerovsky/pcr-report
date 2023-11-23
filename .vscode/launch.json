@@ -12,7 +12,7 @@
             "console": "integratedTerminal",
             "justMyCode": true,
             "args": [
-                "./reports/230922_AAV9-ELISA_fff_GN004360-086"
+                "./example/230901_GN004308-086"
             ]
         }
     ]

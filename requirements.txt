@@ -1,2 +1,5 @@
 markdown
-ninja2
+jinja2
+pandas
+tabulate
+xlsxwriter
