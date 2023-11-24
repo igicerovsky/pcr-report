@@ -2,6 +2,9 @@
 """
 
 from enum import Enum
+from .constants import SAMPLE_TYPE_NAME, CONC_NAME, DROPLET_CHECK_COLNAME, DROPLET_THRESHOLD
+from .constants import CONTROL_CHECK_COLNAME_ORIG, CONTROL_CHECK_COLNAME_ORIG
+
 
 METHOD_LIMIT_MULTIPLIER_NEGATIVE_CONTROL = 0.1
 MIN_3S_NAME = 'lower 3s action'
@@ -56,6 +59,18 @@ def check_wlimits(min3s, min2s, max2s, max3s, val, txt, ex=False):
         else:
             comment = txt
     return comment
+
+
+def control_check_fn(s, dc_limits):
+    c = control_check_routing(dc_limits, s[SAMPLE_TYPE_NAME],
+                              s[CONTROL_CHECK_COLNAME_ORIG], s.name[1])
+    return c[0]
+
+
+def warning_check_fn(s, dc_limits):
+    c = control_check_routing(dc_limits, s[SAMPLE_TYPE_NAME],
+                              s[CONTROL_CHECK_COLNAME_ORIG], s.name[1])
+    return c[1]
 
 
 def check_control(limits, val, type):
@@ -131,6 +146,20 @@ def method_check_s(limits, val, type, txt=None):
                         limits[MAX_METHOD_NAME], val, txt)
 
 
+def method_check_fn(s, dc_limits: dict):
+    """Method check callable
+
+    Parameters:
+    -----------
+    s:
+        sample
+    dc_limits: dict
+        limits dictionary
+    """
+    return method_check_routing(dc_limits['method'], s[SAMPLE_TYPE_NAME],
+                                s[CONC_NAME], s.name[1])
+
+
 def method_check_routing(limits, type, val, target_id):
     """Routing of METHOD checks
 
@@ -157,6 +186,17 @@ def method_check_routing(limits, type, val, target_id):
         raise Exception(f'Invalid sample type {type} in check_routing!')
 
     return ret
+
+
+def droplets_check_fn(s):
+    """Droplets check callable
+
+    Parameters:
+    -----------
+    s:
+        sample
+    """
+    return droplets_check(s[DROPLET_CHECK_COLNAME], DROPLET_THRESHOLD)
 
 
 def droplets_check(droplets_num: int, low_thr: int, ex: bool = False):
@@ -197,3 +237,43 @@ def cv_check(val, thr=CV_THRESHOLD, ex=False):
         else:
             comment = 'CV>{:.0f}%'.format(thr)
     return comment
+
+
+def cv_fn(mean_val: float, std_val: float, stype: str):
+    """Compute Coefficient of variation
+
+    Parameters:
+    -----------
+    mean_val: float
+        mean
+    std_val: float
+        standard deviation
+    stype: str
+        sample type
+    """
+    cv = float("nan")
+    # cv is not applied to negative samples
+    if stype == 'nc':
+        return cv
+
+    if isinstance(mean_val, float) and mean_val != 0.0:
+        cv = 100.0 * std_val / mean_val
+    return cv
+
+
+def add_comment(s, n):
+    if s and n:
+        s += ', ' + n
+    elif not s and n:
+        s = n
+    return s
+
+
+def concat_comments(x):
+    s = None
+    s = add_comment(s, x['method_check'])
+    s = add_comment(s, x['droplet_check'])
+    s = add_comment(s, x['control_check'])
+    s = add_comment(s, x['cv_check'])
+    s = add_comment(s, x['warning_check'])
+    return s

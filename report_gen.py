@@ -6,14 +6,15 @@ import pandas as pd
 from pcrep.config import init_config
 from pcrep.parse_input import parse_analysis_filepath
 from pcrep.constants import CONC_NAME, DIL_FINAL_FACTOR_NAME, DIL_TYPE_NAME, DIL_SAMPLE_DESCRIPTION_NAME
-from pcrep.constants import FDL_NAME, SAMPLE_NAME, SAMPLE_TYPE_NAME
+from pcrep.constants import FDL_NAME, SAMPLE_NAME, SAMPLE_TYPE_NAME, CV_COLNAME
 from pcrep.constants import SAMPLE_NUM_NAME, WELL_RESULT_NAME, TARGET_ID_NAME, SAMPLE_ID_NAME
-from pcrep.pcrep import result_fn
+from pcrep.constants import VALUE_CHECK_NAME, DROPLET_CHECK_NAME
+from pcrep.constants import CONTROL_CHECK_NAME, WARNING_CHECK_NAME, CV_CHECK_NAME
+from pcrep.pcrep import result_fn, multindex_dfi, read_limits
 from pcrep.config import config
-
-
-DATA_DIR = './data'
-PARAMS_FILENAME = 'params.json'
+from pcrep.check import cv_fn, method_check_fn, droplets_check_fn
+from pcrep.check import control_check_fn, warning_check_fn, cv_check, concat_comments
+from pcrep.xlswriter import analysis_to_excel
 
 
 def main_report(analysis_filepath, config_dir):
@@ -48,22 +49,37 @@ def main_report(analysis_filepath, config_dir):
     df.loc[:, [WELL_RESULT_NAME]] = df.apply(lambda x: result_fn(
         x['Conc(copies/µL)'], x['final dilution factor']), axis=1)
 
-    # read plasmid limits
+    dc_limits = read_limits(config_dir)
 
-    palsmid_control_limits = pd.read_csv(
-        os.path.join(config_dir, config['plasmid_control_limits_file']))
-    palsmid_control_limits.set_index(['Target'], inplace=True)
+    dfi = multindex_dfi(df)
+    dfi.loc[:, ['mean [vg/ml]']
+            ] = dfi.groupby(level=["sample_id", 'Target']).apply(lambda x: x['vg/ml'].mean())
+    dfi.loc[:, ['STDE']] = dfi.groupby(level=["sample_id", 'Target']).apply(
+        lambda x: x['vg/ml'].std(ddof=0))
+    dfi.loc[:, [CV_COLNAME]] = dfi.apply(lambda x: cv_fn(
+        x['mean [vg/ml]'], x['STDE'], x['sample type']), axis=1)
 
-    reference_control_limits = pd.read_csv(
-        os.path.join(config_dir, config['reference_control_limits_file']))
-    reference_control_limits.set_index(['Target'], inplace=True)
+    dfi.loc[:, [VALUE_CHECK_NAME]] = dfi.apply(
+        lambda x: method_check_fn(x, dc_limits), axis=1)
+    dfi.loc[:, [DROPLET_CHECK_NAME]] = dfi.apply(
+        lambda x: droplets_check_fn(x), axis=1)
 
-    method_limits = pd.read_csv(os.path.join(
-        config_dir, config['method_limits_file']))
-    method_limits.set_index([TARGET_ID_NAME], inplace=True)
+    dfi.loc[:, [CONTROL_CHECK_NAME]] = dfi.apply(
+        lambda x: control_check_fn(x, dc_limits), axis=1)
+    dfi.loc[:, [WARNING_CHECK_NAME]] = dfi.apply(
+        lambda x: warning_check_fn(x, dc_limits), axis=1)
 
-    dc_limits = {'method': method_limits, 'reference_control': reference_control_limits,
-                 'plasmid_control': palsmid_control_limits}
+    dfi.loc[:, [CV_CHECK_NAME]] = dfi.apply(
+        lambda x: cv_check(x[CV_COLNAME]), axis=1)
+
+    dfi = dfi.assign(comments=dfi.apply(lambda x: concat_comments(x), axis=1))
+    col_order = ['Sample', 'final dilution factor', 'Conc(copies/µL)',
+                 'vg/ml', 'mean [vg/ml]', 'STDE', 'CV [%]', 'comments',
+                 'Accepted Droplets', 'Positives', 'Negatives', 'sample type']
+    dfi = dfi.loc[:, col_order]
+
+    xls_file = base_filepath + '-data_analysis.xlsx'
+    analysis_to_excel(df, xls_file)
 
     print('Done.')
 
