@@ -42,10 +42,16 @@ python -m build --sdist --wheel
 
 ### Running with exported `csv` data
 
-This is a prefered way to run the preocessing of the results and following report generation.
+This is a prefered way to run the prepcessing of the results followed by report generating. The script `report_gen.py` has two command line argumets `--cfg CONFIG_PATH`and `CSV_PATH`, where `CONFIG_PATH` is a path directory containing configuration files, and `CSV_PATH` is a file path of csv file from PCR analysis.  
 
 ```bash
-python todo.py param
+python report_gen.py --cfg C:/work/pcr-report/data C:/work/pcr-report/example/231108_GN004773-019/230811_GN004773-019_20230811_100101_999.csv
+```
+
+or using relative paths
+
+```bash
+python report_gen.py --cfg ./example/231108_GN004773-019/230811_GN004773-019_20230811_100101_999.csv
 ```
 
 ## Check the data
@@ -76,4 +82,3 @@ Is applied to multiple target PCR samples and controls, plasmid control `pc` and
 - CSV delimiter
 - unify naming convention (lowercase/camelcase, separator, datetime format, ...)
 - UNITS: compute in SOP and  device units (shall be the same). Do units conversion at the very end for desired customer output.  
-- 
