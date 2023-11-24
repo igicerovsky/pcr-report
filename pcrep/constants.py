@@ -7,3 +7,5 @@ SAMPLE_NAME = "Sample"
 SAMPLE_TYPE_NAME = "sample type"
 SAMPLE_NUM_NAME = "Sample description 1"
 WELL_RESULT_NAME = 'vg/ml'
+TARGET_ID_NAME = 'target_id'
+SAMPLE_ID_NAME = 'sample_id'

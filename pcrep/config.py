@@ -12,7 +12,8 @@ def init_config(config_dir):
 
 
 def read_config(filename):
-    keys = ['pandoc_bin', 'pdflatex_bin', 'reference_docx', 'params_filename']
+    keys = ['pandoc_bin', 'pdflatex_bin', 'reference_docx',
+            'params_filename', 'plasmid_control_limits_file', 'reference_control_limits_file', 'method_limits_file']
     k_type = ['AAV8', 'AAV9', 'default']
     with open(filename) as json_config:
         items = json.load(json_config).items()

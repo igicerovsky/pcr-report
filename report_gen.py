@@ -6,8 +6,10 @@ import pandas as pd
 from pcrep.config import init_config
 from pcrep.parse_input import parse_analysis_filepath
 from pcrep.constants import CONC_NAME, DIL_FINAL_FACTOR_NAME, DIL_TYPE_NAME, DIL_SAMPLE_DESCRIPTION_NAME
-from pcrep.constants import FDL_NAME, SAMPLE_NAME, SAMPLE_TYPE_NAME, SAMPLE_NUM_NAME, WELL_RESULT_NAME
+from pcrep.constants import FDL_NAME, SAMPLE_NAME, SAMPLE_TYPE_NAME
+from pcrep.constants import SAMPLE_NUM_NAME, WELL_RESULT_NAME, TARGET_ID_NAME, SAMPLE_ID_NAME
 from pcrep.pcrep import result_fn
+from pcrep.config import config
 
 
 DATA_DIR = './data'
@@ -30,7 +32,7 @@ def main_report(analysis_filepath, config_dir):
         analysis_dir, '{}_{}'.format(parsedc['date'], parsedc['gn']))
     input_concentration_data = base_filepath + '_conc.csv'
     df_conc = pd.read_csv(input_concentration_data, sep=";", decimal=',')
-    df_conc.set_index(['sample_id'], inplace=True)
+    df_conc.set_index([SAMPLE_ID_NAME], inplace=True)
 
     df.loc[:, [FDL_NAME]] = df[SAMPLE_NUM_NAME].map(
         df_conc[DIL_FINAL_FACTOR_NAME], na_action='ignore')
@@ -45,6 +47,23 @@ def main_report(analysis_filepath, config_dir):
     samples.sort()
     df.loc[:, [WELL_RESULT_NAME]] = df.apply(lambda x: result_fn(
         x['Conc(copies/µL)'], x['final dilution factor']), axis=1)
+
+    # read plasmid limits
+
+    palsmid_control_limits = pd.read_csv(
+        os.path.join(config_dir, config['plasmid_control_limits_file']))
+    palsmid_control_limits.set_index(['Target'], inplace=True)
+
+    reference_control_limits = pd.read_csv(
+        os.path.join(config_dir, config['reference_control_limits_file']))
+    reference_control_limits.set_index(['Target'], inplace=True)
+
+    method_limits = pd.read_csv(os.path.join(
+        config_dir, config['method_limits_file']))
+    method_limits.set_index([TARGET_ID_NAME], inplace=True)
+
+    dc_limits = {'method': method_limits, 'reference_control': reference_control_limits,
+                 'plasmid_control': palsmid_control_limits}
 
     print('Done.')
 
