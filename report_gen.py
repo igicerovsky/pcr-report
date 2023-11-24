@@ -14,7 +14,8 @@ from pcrep.pcrep import result_fn, multindex_dfi, read_limits
 from pcrep.config import config
 from pcrep.check import cv_fn, method_check_fn, droplets_check_fn
 from pcrep.check import control_check_fn, warning_check_fn, cv_check, concat_comments
-from pcrep.xlswriter import analysis_to_excel
+from pcrep.xlswriter import analysis_to_excel, final_to_excel
+from pcrep.final import make_final
 
 
 def main_report(analysis_filepath, config_dir):
@@ -72,6 +73,7 @@ def main_report(analysis_filepath, config_dir):
     dfi.loc[:, [CV_CHECK_NAME]] = dfi.apply(
         lambda x: cv_check(x[CV_COLNAME]), axis=1)
 
+    dfc = dfi.copy()
     dfi = dfi.assign(comments=dfi.apply(lambda x: concat_comments(x), axis=1))
     col_order = ['Sample', 'final dilution factor', 'Conc(copies/µL)',
                  'vg/ml', 'mean [vg/ml]', 'STDE', 'CV [%]', 'comments',
@@ -80,6 +82,10 @@ def main_report(analysis_filepath, config_dir):
 
     xls_file = base_filepath + '-data_analysis.xlsx'
     analysis_to_excel(df, xls_file)
+
+    dff = make_final(dfc, samples)
+    final_file = base_filepath + '-final.xlsx'
+    final_to_excel(dff, final_file)
 
     print('Done.')
 
