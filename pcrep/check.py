@@ -2,7 +2,7 @@
 """
 
 from enum import Enum
-from .constants import SAMPLE_TYPE_NAME, CONC_NAME, DROPLET_CHECK_COLNAME, DROPLET_THRESHOLD, CONTROL_CHECK_COLNAME_ORIG  # type: ignore
+from .constants import SAMPLE_TYPE_NAME, CONC_NAME, DROPLET_CHECK_COLNAME, DROPLET_THRESHOLD, MEAN_NAME  # type: ignore
 
 
 METHOD_LIMIT_MULTIPLIER_NEGATIVE_CONTROL = 0.1
@@ -62,13 +62,13 @@ def check_wlimits(min3s, min2s, max2s, max3s, val, txt, ex=False):
 
 def control_check_fn(s, dc_limits):
     c = control_check_routing(dc_limits, s[SAMPLE_TYPE_NAME],
-                              s[CONTROL_CHECK_COLNAME_ORIG], s.name[1])
+                              s[MEAN_NAME], s.name[1])
     return c[0]
 
 
 def warning_check_fn(s, dc_limits):
     c = control_check_routing(dc_limits, s[SAMPLE_TYPE_NAME],
-                              s[CONTROL_CHECK_COLNAME_ORIG], s.name[1])
+                              s[MEAN_NAME], s.name[1])
     return c[1]
 
 

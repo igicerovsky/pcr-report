@@ -8,7 +8,7 @@ from pcrep.parse_input import parse_analysis_filepath
 from pcrep.constants import CONC_NAME, DIL_FINAL_FACTOR_NAME, DIL_TYPE_NAME, DIL_SAMPLE_DESCRIPTION_NAME
 from pcrep.constants import FDL_NAME, SAMPLE_NAME, SAMPLE_TYPE_NAME, CV_COLNAME
 from pcrep.constants import SAMPLE_NUM_NAME, WELL_RESULT_NAME, SAMPLE_ID_NAME
-from pcrep.constants import VALUE_CHECK_NAME, DROPLET_CHECK_NAME
+from pcrep.constants import VALUE_CHECK_NAME, DROPLET_CHECK_NAME, MEAN_NAME
 from pcrep.constants import CONTROL_CHECK_NAME, WARNING_CHECK_NAME, CV_CHECK_NAME
 from pcrep.pcrep import result_fn, multindex_dfi, read_limits
 from pcrep.check import cv_fn, method_check_fn, droplets_check_fn
@@ -44,38 +44,37 @@ def main_report(analysis_filepath, config_dir):
     df.loc[:, [WELL_RESULT_NAME]] = df.apply(lambda x: result_fn(
         x[CONC_NAME], x[FDL_NAME]), axis=1)
 
-    dc_limits = read_limits(config_dir)
-
-    dfi = multindex_dfi(df)
-    dfi.loc[:, ['mean [vg/ml]']
-            ] = dfi.groupby(level=["sample_id", 'Target']).apply(lambda x: x['vg/ml'].mean())
-    dfi.loc[:, ['STDE']] = dfi.groupby(level=["sample_id", 'Target']).apply(
+    df = multindex_dfi(df)
+    df.loc[:, [MEAN_NAME]
+           ] = df.groupby(level=["sample_id", 'Target']).apply(lambda x: x['vg/ml'].mean())
+    df.loc[:, ['STDE']] = df.groupby(level=["sample_id", 'Target']).apply(
         lambda x: x['vg/ml'].std(ddof=0))
-    dfi.loc[:, [CV_COLNAME]] = dfi.apply(lambda x: cv_fn(
-        x['mean [vg/ml]'], x['STDE'], x['sample type']), axis=1)
+    df.loc[:, [CV_COLNAME]] = df.apply(lambda x: cv_fn(
+        x[MEAN_NAME], x['STDE'], x['sample type']), axis=1)
 
-    dfi.loc[:, [VALUE_CHECK_NAME]] = dfi.apply(
+    dc_limits = read_limits(config_dir)
+    df.loc[:, [VALUE_CHECK_NAME]] = df.apply(
         lambda x: method_check_fn(x, dc_limits), axis=1)
-    dfi.loc[:, [DROPLET_CHECK_NAME]] = dfi.apply(
+    df.loc[:, [DROPLET_CHECK_NAME]] = df.apply(
         lambda x: droplets_check_fn(x), axis=1)
 
-    dfi.loc[:, [CONTROL_CHECK_NAME]] = dfi.apply(
+    df.loc[:, [CONTROL_CHECK_NAME]] = df.apply(
         lambda x: control_check_fn(x, dc_limits), axis=1)
-    dfi.loc[:, [WARNING_CHECK_NAME]] = dfi.apply(
+    df.loc[:, [WARNING_CHECK_NAME]] = df.apply(
         lambda x: warning_check_fn(x, dc_limits), axis=1)
 
-    dfi.loc[:, [CV_CHECK_NAME]] = dfi.apply(
+    df.loc[:, [CV_CHECK_NAME]] = df.apply(
         lambda x: cv_check(x[CV_COLNAME]), axis=1)
 
-    dfc = dfi.copy()
-    dfi = dfi.assign(comments=dfi.apply(lambda x: concat_comments(x), axis=1))
+    dfc = df.copy()
+    df = df.assign(comments=df.apply(lambda x: concat_comments(x), axis=1))
     col_order = ['Sample', 'final dilution factor', 'Conc(copies/µL)',
-                 'vg/ml', 'mean [vg/ml]', 'STDE', 'CV [%]', 'comments',
+                 'vg/ml', MEAN_NAME, 'STDE', 'CV [%]', 'comments',
                  'Accepted Droplets', 'Positives', 'Negatives', 'sample type']
-    dfi = dfi.loc[:, col_order]
+    df = df.loc[:, col_order]
 
     xls_file = base_filepath + '-data_analysis.xlsx'
-    analysis_to_excel(dfi, xls_file)
+    analysis_to_excel(df, xls_file)
 
     samples = dfc.index.get_level_values(SAMPLE_ID_NAME).unique().values
     samples.sort()
