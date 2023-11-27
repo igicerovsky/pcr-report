@@ -7,11 +7,10 @@ from pcrep.config import init_config
 from pcrep.parse_input import parse_analysis_filepath
 from pcrep.constants import CONC_NAME, DIL_FINAL_FACTOR_NAME, DIL_TYPE_NAME, DIL_SAMPLE_DESCRIPTION_NAME
 from pcrep.constants import FDL_NAME, SAMPLE_NAME, SAMPLE_TYPE_NAME, CV_COLNAME
-from pcrep.constants import SAMPLE_NUM_NAME, WELL_RESULT_NAME, TARGET_ID_NAME, SAMPLE_ID_NAME
+from pcrep.constants import SAMPLE_NUM_NAME, WELL_RESULT_NAME, SAMPLE_ID_NAME
 from pcrep.constants import VALUE_CHECK_NAME, DROPLET_CHECK_NAME
 from pcrep.constants import CONTROL_CHECK_NAME, WARNING_CHECK_NAME, CV_CHECK_NAME
 from pcrep.pcrep import result_fn, multindex_dfi, read_limits
-from pcrep.config import config
 from pcrep.check import cv_fn, method_check_fn, droplets_check_fn
 from pcrep.check import control_check_fn, warning_check_fn, cv_check, concat_comments
 from pcrep.xlswriter import analysis_to_excel, final_to_excel
@@ -25,9 +24,6 @@ def main_report(analysis_filepath, config_dir):
     dc = parse_analysis_filepath(analysis_filepath)
     init_config(config_dir)
 
-    df = pd.read_csv(analysis_filepath, delimiter=';', decimal=',')
-    df[CONC_NAME] = df[CONC_NAME].astype('Float64')
-
     parsedc = parse_analysis_filepath(analysis_filepath)
     analysis_dir = parsedc['analysis_dir']
     base_filepath = os.path.join(
@@ -36,6 +32,8 @@ def main_report(analysis_filepath, config_dir):
     df_conc = pd.read_csv(input_concentration_data, sep=";", decimal=',')
     df_conc.set_index([SAMPLE_ID_NAME], inplace=True)
 
+    df = pd.read_csv(analysis_filepath, delimiter=';', decimal=',')
+    df[CONC_NAME] = df[CONC_NAME].astype('Float64')
     df.loc[:, [FDL_NAME]] = df[SAMPLE_NUM_NAME].map(
         df_conc[DIL_FINAL_FACTOR_NAME], na_action='ignore')
     df.loc[:, [SAMPLE_NAME]] = df[SAMPLE_NUM_NAME].map(
@@ -43,12 +41,8 @@ def main_report(analysis_filepath, config_dir):
     df.loc[:, [SAMPLE_TYPE_NAME]] = df[SAMPLE_NUM_NAME].map(
         df_conc[DIL_TYPE_NAME], na_action='ignore')
     df = df.dropna(subset=[SAMPLE_TYPE_NAME])
-
-    targets = df['Target'].unique()
-    samples = df['Sample description 1'].unique()
-    samples.sort()
     df.loc[:, [WELL_RESULT_NAME]] = df.apply(lambda x: result_fn(
-        x['Conc(copies/µL)'], x['final dilution factor']), axis=1)
+        x[CONC_NAME], x[FDL_NAME]), axis=1)
 
     dc_limits = read_limits(config_dir)
 
@@ -81,8 +75,10 @@ def main_report(analysis_filepath, config_dir):
     dfi = dfi.loc[:, col_order]
 
     xls_file = base_filepath + '-data_analysis.xlsx'
-    analysis_to_excel(df, xls_file)
+    analysis_to_excel(dfi, xls_file)
 
+    samples = dfc.index.get_level_values(SAMPLE_ID_NAME).unique().values
+    samples.sort()
     dff = make_final(dfc, samples)
     final_file = base_filepath + '-final.xlsx'
     final_to_excel(dff, final_file)

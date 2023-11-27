@@ -1,7 +1,7 @@
 from functools import reduce
 import pandas as pd
 
-from .constants import SAMPLE_ID_NAME
+from .constants import SAMPLE_ID_NAME  # type: ignore
 
 
 DC_CONTROLS = {'IDT': {True: 'valid', False: 'not valid'},

@@ -19,8 +19,12 @@
 
 ### KW48-27.11.2023
 
+### KW48-20.11.2023
+
 - `pcrep` module
 - `report_gen.py` script
+- decimal delimitrer
+- preparing for specification (naming, config files, decimal symbol)
 
 ### pre-KW47-20.11.2023
 

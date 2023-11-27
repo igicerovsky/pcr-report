@@ -4,11 +4,11 @@ from os import path
 
 import pandas as pd
 
-from .constants import SAMPLE_ID_NAME, TARGET_ID_NAME
-from .config import config
+from .constants import SAMPLE_ID_NAME, TARGET_ID_NAME  # type: ignore
+from .config import config  # type: ignore
 
 
-def well2idx(well_id):
+def well2idx(well_id: str):
     """Convert well id string to indices
 
     Parameters:
@@ -25,7 +25,7 @@ def well2idx(well_id):
     return wr, wc
 
 
-def result_fn(conc, dil, a=20.0, b=2.0):
+def result_fn(conc: float, dil: float, a=20.0, b=2.0):
     """Compute results
 
     Parameters:
@@ -40,7 +40,7 @@ def result_fn(conc, dil, a=20.0, b=2.0):
     return ((a * conc) * (1000.0 / b)) * dil
 
 
-def multindex_dfi(df):
+def multindex_dfi(df: pd.DataFrame):
     """Create multindex dataframe from analysis data
 
     Parameters:
@@ -58,7 +58,7 @@ def multindex_dfi(df):
     return df
 
 
-def read_limits(config_dir):
+def read_limits(config_dir: str):
     """Read limits from data files
     """
     palsmid_control_limits = pd.read_csv(

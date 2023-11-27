@@ -1,14 +1,14 @@
-from os import path
+import os  # type: ignore
 import json
 
-CONFIG_FILENAME = 'config.json'
+CONFIG_FILENAME: str = 'config.json'
 
 
-config = dict()
+config: dict = dict()
 
 
 def init_config(config_dir):
-    read_config(path.join(config_dir, CONFIG_FILENAME))
+    read_config(os.path.join(config_dir, CONFIG_FILENAME))
 
 
 def read_config(filename):

@@ -2,8 +2,7 @@
 """
 
 from enum import Enum
-from .constants import SAMPLE_TYPE_NAME, CONC_NAME, DROPLET_CHECK_COLNAME, DROPLET_THRESHOLD
-from .constants import CONTROL_CHECK_COLNAME_ORIG, CONTROL_CHECK_COLNAME_ORIG
+from .constants import SAMPLE_TYPE_NAME, CONC_NAME, DROPLET_CHECK_COLNAME, DROPLET_THRESHOLD, CONTROL_CHECK_COLNAME_ORIG  # type: ignore
 
 
 METHOD_LIMIT_MULTIPLIER_NEGATIVE_CONTROL = 0.1
@@ -29,18 +28,18 @@ class CheckType(str, Enum):
     CV = 'CV'
 
 
-def check_limits(min, max, val, txt, ex=False):
+def check_limits(min: float, max: float, val: float, txt: str, ex=False):
     comment = None
     if val < min:
         if ex:
             comment = '{} {:.2f} < {}'.format(txt, val, min)
         else:
-            comment = '<{}'.format(txt, val, min)
+            comment = '<{}'.format(txt)
     elif val > max:
         if ex:
             comment = '{} {:.2f} > {}'.format(txt, val, max)
         else:
-            comment = '>{}'.format(txt, val, max)
+            comment = '>{}'.format(txt)
     return comment
 
 
