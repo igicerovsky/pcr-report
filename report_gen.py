@@ -8,7 +8,7 @@ from pcrep.parse_input import parse_analysis_filepath
 from pcrep.constants import CONC_NAME, DIL_FINAL_FACTOR_NAME, DIL_TYPE_NAME, DIL_SAMPLE_DESCRIPTION_NAME
 from pcrep.constants import FDL_NAME, SAMPLE_NAME, SAMPLE_TYPE_NAME, CV_COLNAME
 from pcrep.constants import SAMPLE_NUM_NAME, WELL_RESULT_NAME, SAMPLE_ID_NAME
-from pcrep.constants import VALUE_CHECK_NAME, DROPLET_CHECK_NAME, MEAN_NAME
+from pcrep.constants import VALUE_CHECK_NAME, DROPLET_CHECK_NAME, MEAN_NAME, STDE_NAME
 from pcrep.constants import CONTROL_CHECK_NAME, WARNING_CHECK_NAME, CV_CHECK_NAME
 from pcrep.pcrep import result_fn, multindex_dfi, read_limits
 from pcrep.check import cv_fn, method_check_fn, droplets_check_fn
@@ -46,11 +46,11 @@ def main_report(analysis_filepath, config_dir):
 
     df = multindex_dfi(df)
     df.loc[:, [MEAN_NAME]
-           ] = df.groupby(level=["sample_id", 'Target']).apply(lambda x: x['vg/ml'].mean())
-    df.loc[:, ['STDE']] = df.groupby(level=["sample_id", 'Target']).apply(
-        lambda x: x['vg/ml'].std(ddof=0))
+           ] = df.groupby(level=[SAMPLE_ID_NAME, 'Target']).apply(lambda x: x[WELL_RESULT_NAME].mean())
+    df.loc[:, [STDE_NAME]] = df.groupby(level=[SAMPLE_ID_NAME, 'Target']).apply(
+        lambda x: x[WELL_RESULT_NAME].std(ddof=0))
     df.loc[:, [CV_COLNAME]] = df.apply(lambda x: cv_fn(
-        x[MEAN_NAME], x['STDE'], x['sample type']), axis=1)
+        x[MEAN_NAME], x[STDE_NAME], x['sample type']), axis=1)
 
     dc_limits = read_limits(config_dir)
     df.loc[:, [VALUE_CHECK_NAME]] = df.apply(
@@ -69,7 +69,7 @@ def main_report(analysis_filepath, config_dir):
     dfc = df.copy()
     df = df.assign(comments=df.apply(lambda x: concat_comments(x), axis=1))
     col_order = ['Sample', 'final dilution factor', 'Conc(copies/µL)',
-                 'vg/ml', MEAN_NAME, 'STDE', 'CV [%]', 'comments',
+                 WELL_RESULT_NAME, MEAN_NAME, STDE_NAME, 'CV [%]', 'comments',
                  'Accepted Droplets', 'Positives', 'Negatives', 'sample type']
     df = df.loc[:, col_order]
 
