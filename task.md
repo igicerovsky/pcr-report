@@ -3,7 +3,6 @@
 ## TODO
 
 - e2e test
-- HT2, check for multiple targets
 - Specification togetther with Fabian & Anja
   - Config folder content
   - Decimal digits format
@@ -23,6 +22,7 @@
 
 - deploy on Anjas computer
 - `_conc` file as `.xlsx`
+- HT2, multiple targets support
 
 ### KW48-20.11.2023
 

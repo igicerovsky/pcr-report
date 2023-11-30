@@ -4,7 +4,8 @@ import argparse
 from pcrep.config import init_config
 from pcrep.parse_input import parse_analysis_filepath
 from pcrep.constants import WELL_RESULT_NAME, SAMPLE_ID_NAME, MEAN_NAME, STDE_NAME, DIL_FINAL_FACTOR_NAME
-from pcrep.constants import CONC_NAME, CV_COLNAME, SAMPLE_TYPE_NAME
+from pcrep.constants import CONC_NAME, CV_COLNAME, SAMPLE_TYPE_NAME, DROPLET_CHECK_COLNAME, COMMENTS_NAME
+from pcrep.constants import POSITIVES_NAME, NEGATIVES_NAME, SAMPLE_NAME
 from pcrep.pcrep import init_data, process_data, read_limits, read_conc
 from pcrep.check import concat_comments
 from pcrep.xlswriter import analysis_to_excel, final_to_excel
@@ -31,9 +32,9 @@ def main_report(analysis_filepath, config_dir):
 
     dfc = df.copy()
     df = df.assign(comments=df.apply(lambda x: concat_comments(x), axis=1))
-    col_order = ['Sample', DIL_FINAL_FACTOR_NAME, CONC_NAME,
-                 WELL_RESULT_NAME, MEAN_NAME, STDE_NAME, CV_COLNAME, 'comments',
-                 'Accepted Droplets', 'Positives', 'Negatives', SAMPLE_TYPE_NAME]
+    col_order = [SAMPLE_NAME, DIL_FINAL_FACTOR_NAME, CONC_NAME,
+                 WELL_RESULT_NAME, MEAN_NAME, STDE_NAME, CV_COLNAME, COMMENTS_NAME,
+                 DROPLET_CHECK_COLNAME, POSITIVES_NAME, NEGATIVES_NAME, SAMPLE_TYPE_NAME]
     df = df.loc[:, col_order]
 
     xls_file = base_filepath + '-data_analysis.xlsx'

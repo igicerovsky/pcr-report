@@ -6,7 +6,9 @@ from .constants import SAMPLE_ID_NAME, TARGET_NAME  # type: ignore
 
 DC_CONTROLS = {'IDT': {True: 'valid', False: 'not valid'},
                'ITR': {True: 'fulfill assay criteria', False: 'does not fulfill assay criteria'},
-               'HT2': {True: 'valid', False: 'not valid'}}
+               'HT2': {True: 'valid', False: 'not valid'},
+               'FVIII': {True: 'valid', False: 'not valid'},
+               'FIX': {True: 'valid', False: 'not valid'}}
 
 
 def get_sample(df, samnple_num, target_id=None):
@@ -108,8 +110,10 @@ def make_final(df, samples):
         dff = pd.concat([dff, pd.DataFrame([r])], ignore_index=True)
     dff.set_index(['id'], inplace=True)
 
-    col_order = ['target', 'type', 'name', 'result IDT [vg/ml]',
-                 'result ITR [vg/ml]', 'comment IDT', 'comment ITR']
+    targets = df.index.get_level_values(TARGET_NAME).unique()
+    col_order = ['target', 'type', 'name']
+    col_order += [f'result {x} [vg/ml]' for x in targets]
+    col_order += [f'comment {x}' for x in targets]
     dff = dff.loc[:, col_order]
 
     return dff
