@@ -1,11 +1,12 @@
 from functools import reduce
 import pandas as pd
 
-from .constants import SAMPLE_ID_NAME  # type: ignore
+from .constants import SAMPLE_ID_NAME, TARGET_NAME  # type: ignore
 
 
 DC_CONTROLS = {'IDT': {True: 'valid', False: 'not valid'},
-               'ITR': {True: 'fulfill assay criteria', False: 'does not fulfill assay criteria'}}
+               'ITR': {True: 'fulfill assay criteria', False: 'does not fulfill assay criteria'},
+               'HT2': {True: 'valid', False: 'not valid'}}
 
 
 def get_sample(df, samnple_num, target_id=None):
@@ -28,7 +29,7 @@ def add_to(first, second, delim):
 def isvalid_nc(s):
     comment = None
     val = s['mean [vg/ml]'].values[0]
-    target = s.index.get_level_values('Target')[0]
+    target = s.index.get_level_values(TARGET_NAME)[0]
     valid = not any(x is not None for x in s['droplet_check'].values)
     if any(x is not None for x in s['droplet_check'].values):
         comment = reduce(lambda s1, s2: s1 or s2, s['droplet_check'].values)
@@ -68,7 +69,7 @@ def isvalid_prs(s):
 
 def process_sample(s):
     idxs = pd.IndexSlice
-    targets = s.index.get_level_values('Target').unique()
+    targets = s.index.get_level_values(TARGET_NAME).unique()
     target = '/'.join(targets)
     id = int(s.index.get_level_values(SAMPLE_ID_NAME).unique()[0])
     stype = s['sample type'].array[0]
