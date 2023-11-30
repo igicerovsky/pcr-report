@@ -16,13 +16,11 @@ def main_report(analysis_filepath, config_dir):
     print(f'Analysis file {analysis_filepath}')
     print(f'Configuration directory {config_dir}')
 
-    dc = parse_analysis_filepath(analysis_filepath)
     init_config(config_dir)
 
     parsedc = parse_analysis_filepath(analysis_filepath)
-    analysis_dir = parsedc['analysis_dir']
     base_filepath = os.path.join(
-        analysis_dir, '{}_{}'.format(parsedc['date'], parsedc['gn']))
+        parsedc['analysis_dir'], '{}_{}'.format(parsedc['date'], parsedc['gn']))
     input_concentration_data = base_filepath + '_conc.xlsx'
     df_conc = read_conc(input_concentration_data)
 
