@@ -28,8 +28,8 @@ def main_report(analysis_filepath, config_dir):
     analysis_dir = parsedc['analysis_dir']
     base_filepath = os.path.join(
         analysis_dir, '{}_{}'.format(parsedc['date'], parsedc['gn']))
-    input_concentration_data = base_filepath + '_conc.csv'
-    df_conc = pd.read_csv(input_concentration_data, sep=";", decimal=',')
+    input_concentration_data = base_filepath + '_conc.xlsx'
+    df_conc = pd.read_excel(input_concentration_data)
     df_conc.set_index([SAMPLE_ID_NAME], inplace=True)
 
     df = pd.read_csv(analysis_filepath, delimiter=';', decimal=',')

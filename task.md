@@ -2,6 +2,8 @@
 
 ## TODO
 
+- e2e test
+- HT2, check for multiple targets
 - Specification togetther with Fabian & Anja
   - Config folder content
   - Decimal digits format
@@ -18,6 +20,9 @@
 ## DONE
 
 ### KW48-27.11.2023
+
+- deploy on Anjas computer
+- `_conc` file as `.xlsx`
 
 ### KW48-20.11.2023
 
