@@ -2,7 +2,6 @@
 
 ## TODO
 
-- e2e test
 - Specification togetther with Fabian & Anja
   - Config folder content
   - Decimal digits format
@@ -20,6 +19,8 @@
 
 ### KW48-27.11.2023
 
+- GUI: simple PoC
+- e2e test
 - deploy on Anjas computer
 - `_conc` file as `.xlsx`
 - HT2, multiple targets support

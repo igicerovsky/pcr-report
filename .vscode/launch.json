@@ -13,6 +13,15 @@
                 "--cfg",
                 "C:/work/pcr-report/data"
             ]
+        },
+        {
+            "name": "gui",
+            "type": "python",
+            "request": "launch",
+            "program": "report_gui.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": []
         }
     ]
 }
