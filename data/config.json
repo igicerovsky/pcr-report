@@ -1,9 +1,5 @@
 {
     "pandoc_bin": "c:/work/pandoc/pandoc",
     "pdflatex_bin": "c:/Users/hwn6193/AppData/Local/Programs/MiKTeX/miktex/bin/x64/pdflatex",
-    "reference_docx": "./data/custom-reference.docx",
-    "params_filename": "./data/params.json",
-    "plasmid_control_limits_file": "plasmid_control_limits.csv",
-    "reference_control_limits_file": "reference_control_limits.csv",
-    "method_limits_file": "method_limits.csv"
+    "reference_docx": "custom-reference.docx"
 }

@@ -2,6 +2,7 @@
 
 ## TODO
 
+- Sample nformation limits 'for information only'
 - Specification togetther with Fabian & Anja
   - Config folder content
   - Decimal digits format
@@ -16,6 +17,11 @@
 - Next steps ???
 
 ## DONE
+
+### KW49-4.12.2023
+
+- GUI: output
+- Desktop link; '.bat' script
 
 ### KW48-27.11.2023
 

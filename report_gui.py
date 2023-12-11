@@ -1,8 +1,9 @@
 import os
 import sys
+import argparse
 
 from tkinter import *
-from tkinter import filedialog
+from tkinter import filedialog, messagebox
 
 from pcrep.config import init_config
 from pcrep.parse_input import parse_analysis_filepath
@@ -57,6 +58,12 @@ def browse_files():
                                           title="Select a PCR Analysis File",
                                           filetypes=[('CSV Files', '*.csv')])
     analysis_file.set(filename)
+    entry_analysis.update()
+
+    try:
+        main_report(analysis_file.get(), config_folder.get())
+    except Exception as e:
+        messagebox.showerror("PCR Error", e)
 
 
 def browse_folder():
@@ -82,6 +89,11 @@ class TextRedirector(object):
 
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--cfg', help="config and params directory",
+                        default=None)
+    args = parser.parse_args()
+
     window = Tk()
     window.title('PCR Analysis')
     window.geometry("800x400")
@@ -90,7 +102,10 @@ if __name__ == '__main__':
     analysis_file = StringVar()
     analysis_file.set('...')
     config_folder = StringVar()
-    config_folder.set(os.path.join(os.getcwd(), 'data'))
+    if args.cfg:
+        config_folder.set(args.cfg)
+    else:
+        config_folder.set(os.path.join(os.getcwd(), 'data'))
 
     button_analysis = Button(window, text="Browse Analysis Files",
                              command=browse_files)
@@ -108,15 +123,8 @@ if __name__ == '__main__':
     entry_config.grid(row=1, column=1,
                       padx=10, pady=10)
 
-    button_exit = Button(window, text="Compute", command=compute)
-    button_exit.grid(row=2, column=0)
-
     text = Text(window, wrap="word", width=80, height=16, state=DISABLED)
-    # vscroll = Scrollbar(window, orient="vertical", command=text.yview)
-    # text.configure(yscrollcommand=vscroll.set)
     text.grid(row=2, column=1, padx=10, pady=10)
-    # text.tag_configure("stderr", foreground="#b22222")
-
     sys.stdout = TextRedirector(text, "stderr")
     sys.stdout = TextRedirector(text, "stdout")
 
