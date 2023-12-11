@@ -1,5 +1,8 @@
-import os
+from os import path, getcwd
 import argparse
+
+from tkinter import *
+from tkinter import filedialog
 
 from pcrep.config import init_config
 from pcrep.parse_input import parse_analysis_filepath
@@ -19,7 +22,7 @@ def main_report(analysis_filepath, config_dir):
     init_config(config_dir)
 
     parsedc = parse_analysis_filepath(analysis_filepath)
-    base_filepath = os.path.join(
+    base_filepath = path.join(
         parsedc['analysis_dir'], '{}_{}'.format(parsedc['date'], parsedc['gn']))
     input_concentration_data = base_filepath + '_conc.xlsx'
     df_conc = read_conc(input_concentration_data)
@@ -47,18 +50,78 @@ def main_report(analysis_filepath, config_dir):
     print('Done.')
 
 
+def browse_analysis():
+    filename = filedialog.askopenfilename(initialdir=getcwd(),
+                                          title="Select a PCR Analysis File",
+                                          filetypes=[('CSV Files', '*.csv')])
+    global analysis_file, entry_analysis
+    analysis_file.set(filename)
+    entry_analysis.update()
+    global window
+    window.destroy()
+
+
+def browse_config(config_folder):
+    filename = filedialog.askdirectory(initialdir=config_folder,
+                                       title="Select a Config Folder")
+    global analysis_file
+    analysis_file.set(filename)
+
+
+def gui(config_dir):
+    global window
+    window = Tk()
+    window.title('PCR Analysis')
+    window.geometry("800x100")
+
+    global analysis_file
+    analysis_file = StringVar()
+    analysis_file.set('...')
+    global config_folder
+    config_folder = StringVar()
+    if config_dir:
+        config_folder.set(config_dir)
+    else:
+        config_folder.set(path.join(getcwd(), 'data'))
+
+    button_analysis = Button(window, text="Browse Analysis File",
+                             command=browse_analysis)
+    button_analysis.grid(column=0, row=0)
+
+    global entry_analysis
+    entry_analysis = Entry(textvariable=analysis_file,
+                           state=DISABLED, width=110)
+    entry_analysis.grid(row=0, column=1,
+                        padx=10, pady=10)
+
+    button_config = Button(window, text="Browse Config Folder",
+                           command=browse_config)
+    button_config.grid(column=0, row=1)
+    entry_config = Entry(textvariable=config_folder, state=DISABLED, width=110)
+    entry_config.grid(row=1, column=1,
+                      padx=10, pady=10)
+    window.mainloop()
+
+    main_report(analysis_file.get(), config_folder.get())
+
+
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "analysis", help="analysis file path", default=None)
     parser.add_argument('--cfg', help="config and params directory",
                         default='./data')
+    parser.add_argument(
+        "--analysis", help="analysis file path", default=None)
+    parser.add_argument('--gui', action='store_true',
+                        help="use calc files as input")
 
     args = parser.parse_args()
-    analysis_filepath = args.analysis.rstrip("/\\")
+    analysis_filepath = args.analysis
     config_dir = args.cfg
 
-    main_report(analysis_filepath, config_dir)
+    if args.analysis:
+        main_report(analysis_filepath, config_dir)
+    else:
+        gui(config_dir)
 
 
 if __name__ == "__main__":
