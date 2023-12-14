@@ -1,7 +1,7 @@
 import pandas as pd
 
 
-def analysis_to_excel(df, filename):
+def analysis_to_excel(df: pd.DataFrame, filename: str):
     # Create a Pandas Excel writer using XlsxWriter as the engine.
     writer = pd.ExcelWriter(filename, engine="xlsxwriter")
 
@@ -28,6 +28,17 @@ def analysis_to_excel(df, filename):
     worksheet.set_column('J:J', None, fmt_dec2f)
     worksheet.set_column('K:K', 32)
     worksheet.set_column('L:O', 16)
+
+    # Add a format.
+    format_strike = workbook.add_format()
+    format_strike.set_font_strikeout()
+    rows = len(df.index)
+
+    # Apply a conditional format to the required cell range.
+    worksheet.conditional_format(f'F2:G{rows}',
+                                 {'type':     'formula',
+                                  'criteria': '=SEARCH("information", $K2)>0',
+                                  'format':   format_strike})
 
     # Close the Pandas Excel writer and output the Excel file.
     writer.close()

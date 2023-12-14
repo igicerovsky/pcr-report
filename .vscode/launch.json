@@ -9,6 +9,7 @@
             "console": "integratedTerminal",
             "justMyCode": true,
             "args": [
+                "--analysis",
                 "C:/work/pcr-report/example/231128_GN005006-013_IDT-ITR_HT2/231128_GN005006-013_20231128_123248_019.csv",
                 "--cfg",
                 "C:/work/pcr-report/data"

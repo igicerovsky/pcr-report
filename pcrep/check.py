@@ -13,7 +13,9 @@ MAX_2S_NAME = 'upper 2s warning'
 MIN_METHOD_NAME = 'Lower [vg/μl]'
 MAX_METHOD_NAME = 'Upper [vg/μl]'
 CV_THRESHOLD = 20.0  # in %
-WARN_INFO = 'for information'
+WARN_INFO = 'for information only'
+MIN_METHOD_NAME_INFO = 'Lower info [vg/μl]'
+MAX_METHOD_NAME_INFO = 'Upper info [vg/μl]'
 
 
 class CheckLevel(int, Enum):
@@ -137,12 +139,36 @@ def method_check_nc(thr, val, ex=False):
     return comment
 
 
-def method_check_s(limits, val, type, txt=None):
+def check_limits_i(val: float,
+                   min: float, max: float,
+                   min_i: float, max_i: float,
+                   txt: str, ex=False):
+    comment = None
+    if min_i and val > min_i and val < min:
+        comment = '< {}'.format(WARN_INFO)
+    elif val < min:
+        if ex:
+            comment = '{} {:.2f} < {}'.format(txt, val, min)
+        else:
+            comment = '<{}'.format(txt)
+    elif max_i and val < max_i and val > max:
+        comment = '> {}'.format(WARN_INFO)
+    elif val > max:
+        if ex:
+            comment = '{} {:.2f} > {}'.format(txt, val, max)
+        else:
+            comment = '>{}'.format(txt)
+    return comment
+
+
+def method_check_s(limits, val, txt=None):
     """Check sample
     """
 
-    return check_limits(limits[MIN_METHOD_NAME],
-                        limits[MAX_METHOD_NAME], val, txt)
+    return check_limits_i(val,
+                          limits[MIN_METHOD_NAME], limits[MAX_METHOD_NAME],
+                          limits[MIN_METHOD_NAME_INFO], limits[MAX_METHOD_NAME_INFO],
+                          txt)
 
 
 def method_check_fn(s, dc_limits: dict):
@@ -180,7 +206,7 @@ def method_check_routing(limits, type, val, target_id):
             METHOD_LIMIT_MULTIPLIER_NEGATIVE_CONTROL
         ret = method_check_nc(t, val)
     elif type == 'rc' or type == 'pc' or type == 's':
-        ret = method_check_s(limits.loc[target_id], val, type, 'LOQ')
+        ret = method_check_s(limits.loc[target_id], val, 'LOQ')
     else:
         raise Exception(f'Invalid sample type {type} in check_routing!')
 
