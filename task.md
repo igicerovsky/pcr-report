@@ -18,6 +18,10 @@
 
 ## DONE
 
+### KW49-11.12.2023
+
+- GUI refactoring - display Select Folder dialog only for input, use stdout for output
+
 ### KW49-4.12.2023
 
 - GUI: output
