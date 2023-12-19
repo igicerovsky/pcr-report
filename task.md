@@ -2,7 +2,6 @@
 
 ## TODO
 
-- Sample nformation limits 'for information only'
 - Specification togetther with Fabian & Anja
   - Config folder content
   - Decimal digits format
@@ -20,6 +19,8 @@
 
 ### KW49-11.12.2023
 
+- 'for information only' formatting
+- Sample information limits 'for information only'
 - GUI refactoring - display Select Folder dialog only for input, use stdout for output
 
 ### KW49-4.12.2023
