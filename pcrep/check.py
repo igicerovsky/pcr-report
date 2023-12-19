@@ -145,14 +145,14 @@ def check_limits_i(val: float,
                    txt: str, ex=False):
     comment = None
     if min_i and val > min_i and val < min:
-        comment = '< {}'.format(WARN_INFO)
+        comment = '{}'.format(WARN_INFO)
     elif val < min:
         if ex:
             comment = '{} {:.2f} < {}'.format(txt, val, min)
         else:
             comment = '<{}'.format(txt)
     elif max_i and val < max_i and val > max:
-        comment = '> {}'.format(WARN_INFO)
+        comment = '{}'.format(WARN_INFO)
     elif val > max:
         if ex:
             comment = '{} {:.2f} > {}'.format(txt, val, max)

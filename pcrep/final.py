@@ -2,6 +2,7 @@ from functools import reduce
 import pandas as pd
 
 from .constants import SAMPLE_ID_NAME, TARGET_NAME  # type: ignore
+from .check import WARN_INFO
 
 
 DC_CONTROLS = {'IDT': {True: 'valid', False: 'not valid'},
@@ -95,8 +96,12 @@ def process_sample(s):
             comment = DC_CONTROLS[t][v[0]]
         elif stype == 's':
             v = isvalid_prs(s.loc[idxs[:, [t], :], :])
-            if not v[0]:
-                v = (v[0], v[2])
+            if v[2] and WARN_INFO in v[2]:
+                comment = v[2]
+            elif v[2]:
+                v = (v[0], v[2], v[1])  # nasty hack
+            # if not v[0]:
+            #     v = (v[0], v[2])
         dc[k] = v[1]
         dc[kc] = comment
     return dc

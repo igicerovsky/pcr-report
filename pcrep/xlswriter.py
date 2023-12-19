@@ -70,6 +70,21 @@ def final_to_excel(df, filename):
     worksheet.set_column('G:G', 32)
     worksheet.set_column('H:H', 32)
 
+    # Add a format.
+    format_strike = workbook.add_format()
+    format_strike.set_font_strikeout()
+    rows = len(df.index)
+
+    # Apply a conditional format to the required cell range.
+    worksheet.conditional_format(f'E2:E{rows}',
+                                 {'type':     'formula',
+                                  'criteria': '=SEARCH("information", $G2)>0',
+                                  'format':   format_strike})
+    worksheet.conditional_format(f'F2:F{rows}',
+                                 {'type':     'formula',
+                                  'criteria': '=SEARCH("information", $H2)>0',
+                                  'format':   format_strike})
+
     # Close the Pandas Excel writer and output the Excel file.
     writer.close()
     print(f'Final report exported to excel as {filename}')
