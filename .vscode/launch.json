@@ -5,7 +5,7 @@
             "name": "report",
             "type": "python",
             "request": "launch",
-            "program": "report_gen.py",
+            "program": "pcr_report.py",
             "console": "integratedTerminal",
             "justMyCode": true,
             "args": [
@@ -19,13 +19,14 @@
             "name": "gg",
             "type": "python",
             "request": "launch",
-            "program": "report_gen.py",
+            "program": "pcr_report.py",
             "console": "integratedTerminal",
             "justMyCode": true,
             "args": [
-                "--gui",
                 "--cfg",
-                "C:/work/pcr-report/data"
+                "C:/work/pcr-report/data",
+                "--ifld",
+                "C:/work/pcr-report/example"
             ]
         }
     ]

@@ -50,25 +50,31 @@ def main_report(analysis_filepath, config_dir):
     print('Done.')
 
 
-def browse_analysis():
-    filename = filedialog.askopenfilename(initialdir=getcwd(),
+def browse_analysis(init_folder):
+    initialdir = getcwd()
+    if init_folder:
+        initialdir = init_folder
+    filename = filedialog.askopenfilename(initialdir=initialdir,
                                           title="Select a PCR Analysis File",
                                           filetypes=[('CSV Files', '*.csv')])
-    global analysis_file, entry_analysis
-    analysis_file.set(filename)
-    entry_analysis.update()
-    global window
-    window.destroy()
+    if filename:
+        global analysis_file, entry_analysis
+        analysis_file.set(filename)
+        entry_analysis.update()
+        global window
+        window.destroy()
 
 
-def browse_config(config_folder):
-    filename = filedialog.askdirectory(initialdir=config_folder,
-                                       title="Select a Config Folder")
-    global analysis_file
-    analysis_file.set(filename)
+def browse_config(init_folder):
+    dirname = filedialog.askdirectory(initialdir=init_folder,
+                                      title="Select a Config Folder")
+
+    if dirname:
+        global config_folder
+        config_folder.set(dirname)
 
 
-def gui(config_dir):
+def gui(config_dir, init_folder):
     global window
     window = Tk()
     window.title('PCR Analysis')
@@ -84,15 +90,15 @@ def gui(config_dir):
     else:
         config_folder.set(path.join(getcwd(), 'data'))
 
-    button_analysis = Button(window, text="Browse Analysis File",
-                             command=browse_analysis)
-    button_analysis.grid(column=0, row=0)
-
     global entry_analysis
     entry_analysis = Entry(textvariable=analysis_file,
                            state=DISABLED, width=110)
     entry_analysis.grid(row=0, column=1,
                         padx=10, pady=10)
+
+    button_analysis = Button(window, text="Browse Analysis File",
+                             command=lambda: browse_analysis(init_folder))
+    button_analysis.grid(column=0, row=0)
 
     button_config = Button(window, text="Browse Config Folder",
                            command=browse_config)
@@ -102,7 +108,8 @@ def gui(config_dir):
                       padx=10, pady=10)
     window.mainloop()
 
-    main_report(analysis_file.get(), config_folder.get())
+    # main_report(analysis_file.get(), config_folder.get())
+    return analysis_file.get()
 
 
 def main():
@@ -111,17 +118,28 @@ def main():
                         default='./data')
     parser.add_argument(
         "--analysis", help="analysis file path", default=None)
-    parser.add_argument('--gui', action='store_true',
-                        help="use calc files as input")
+    parser.add_argument('--ifld', help="initial analysis folder", default=None)
 
     args = parser.parse_args()
     analysis_filepath = args.analysis
     config_dir = args.cfg
+    init_folder = args.ifld
 
-    if args.analysis:
+    if not analysis_filepath:
+        analysis_filepath = gui(config_dir, init_folder)
+    if not analysis_filepath:
+        print("Canceled.")
+        return None
+
+    try:
         main_report(analysis_filepath, config_dir)
-    else:
-        gui(config_dir)
+    except Exception as e:
+        print(e)
+        print('Failed!')
+    # if args.analysis:
+    #     main_report(analysis_filepath, config_dir)
+    # else:
+    #     gui(config_dir)
 
 
 if __name__ == "__main__":
