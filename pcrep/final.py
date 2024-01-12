@@ -116,7 +116,7 @@ def make_final(df, samples):
     dff.set_index(['id'], inplace=True)
 
     targets = df.index.get_level_values(TARGET_NAME).unique()
-    col_order = ['target', 'type', 'name']
+    col_order = ['target', 'name']
     col_order += [f'result {x} [vg/ml]' for x in targets]
     col_order += [f'comment {x}' for x in targets]
     dff = dff.loc[:, col_order]
