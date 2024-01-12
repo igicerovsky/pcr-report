@@ -20,6 +20,7 @@
 ## KW01-08.01.2024
 
 - plasmid and reference control shall not be for information only, value shall not be striked through
+- bug fix: rm type column from final results
 
 ### KW49-11.12.2023
 
