@@ -2,8 +2,8 @@
 """
 
 from enum import Enum
-from .constants import SAMPLE_TYPE_NAME, CONC_NAME, DROPLET_CHECK_COLNAME, DROPLET_THRESHOLD, MEAN_NAME  # type: ignore
-
+from .constants import SAMPLE_TYPE_NAME, CONC_NAME, DROPLET_COLNAME, DROPLET_THRESHOLD, MEAN_NAME  # type: ignore
+from .constants import CONTROL_CHECK_NAME, WARNING_CHECK_NAME, CV_CHECK_NAME, DROPLET_CHECK_NAME, VALUE_CHECK_NAME
 
 METHOD_LIMIT_MULTIPLIER_NEGATIVE_CONTROL = 0.1
 MIN_3S_NAME = 'lower 3s action'
@@ -87,10 +87,12 @@ def check_control(limits, val, type):
     """
     r3s = check_limits(limits[MIN_3S_NAME], limits[MAX_3S_NAME], val, type)
     r2s = None
-    if not r3s:
+    USE_2S3S = False  # not using <2s, 3s> interval check now
+    if not r3s and USE_2S3S:
+        txt = WARN_INFO
         r2s = check_wlimits(limits[MIN_3S_NAME], limits[MIN_2S_NAME],
                             limits[MAX_2S_NAME], limits[MAX_3S_NAME],
-                            val, WARN_INFO)
+                            val, txt)
 
     return (r3s, r2s)
 
@@ -221,7 +223,7 @@ def droplets_check_fn(s):
     s:
         sample
     """
-    return droplets_check(s[DROPLET_CHECK_COLNAME], DROPLET_THRESHOLD)
+    return droplets_check(s[DROPLET_COLNAME], DROPLET_THRESHOLD)
 
 
 def droplets_check(droplets_num: int, low_thr: int, ex: bool = False):
@@ -296,9 +298,9 @@ def add_comment(s, n):
 
 def concat_comments(x):
     s = None
-    s = add_comment(s, x['method_check'])
-    s = add_comment(s, x['droplet_check'])
-    s = add_comment(s, x['control_check'])
-    s = add_comment(s, x['cv_check'])
-    s = add_comment(s, x['warning_check'])
+    s = add_comment(s, x[VALUE_CHECK_NAME])
+    s = add_comment(s, x[DROPLET_CHECK_NAME])
+    s = add_comment(s, x[CONTROL_CHECK_NAME])
+    s = add_comment(s, x[CV_CHECK_NAME])
+    s = add_comment(s, x[WARNING_CHECK_NAME])
     return s

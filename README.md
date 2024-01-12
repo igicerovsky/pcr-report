@@ -68,7 +68,7 @@ NUmber of droplets check is defined by minimum number of total droplets and is a
 
 ### Control limit checks
 
-Controll limits checkare aplliet to reference `rc` and plasmid control `pc`. Column used for check is computed method result `vg/ml`.
+Controll limits checks are applied to reference `rc` and plasmid control `pc`. Column used for check is computed method result `vg/ml`.
 ![method check](./media/control_check.png)
 
 ### Coefficient of variation (CV)

@@ -6,7 +6,7 @@ import pandas as pd
 from pcrep.config import init_config
 from pcrep.parse_input import parse_analysis_filepath
 from pcrep.constants import WELL_RESULT_NAME, SAMPLE_ID_NAME, MEAN_NAME, STDE_NAME, DIL_FINAL_FACTOR_NAME
-from pcrep.constants import CONC_NAME, CV_COLNAME, SAMPLE_TYPE_NAME, DROPLET_CHECK_COLNAME, COMMENTS_NAME
+from pcrep.constants import CONC_NAME, CV_COLNAME, SAMPLE_TYPE_NAME, DROPLET_COLNAME, COMMENTS_NAME
 from pcrep.constants import POSITIVES_NAME, NEGATIVES_NAME, SAMPLE_NAME
 from pcrep.pcrep import init_data, process_data, read_limits, read_conc
 from pcrep.check import concat_comments
@@ -31,7 +31,7 @@ def e2e(analysis_filepath, config_dir):
     df = df.assign(comments=df.apply(lambda x: concat_comments(x), axis=1))
     col_order = [SAMPLE_NAME, DIL_FINAL_FACTOR_NAME, CONC_NAME,
                  WELL_RESULT_NAME, MEAN_NAME, STDE_NAME, CV_COLNAME, COMMENTS_NAME,
-                 DROPLET_CHECK_COLNAME, POSITIVES_NAME, NEGATIVES_NAME, SAMPLE_TYPE_NAME]
+                 DROPLET_COLNAME, POSITIVES_NAME, NEGATIVES_NAME, SAMPLE_TYPE_NAME]
     df = df.loc[:, col_order]
 
     ha = hashlib.sha1(pd.util.hash_pandas_object(df).values).hexdigest()
@@ -44,7 +44,7 @@ def e2e(analysis_filepath, config_dir):
     samples.sort()
     dff = make_final(dfc, samples)
     hf = hashlib.sha1(pd.util.hash_pandas_object(dff).values).hexdigest()
-    hash_f = '13d057b113180a43aca34210207f25a9cc7ee6ff'
+    hash_f = '2bacb9237ee2b3bc143c595e22aa0da2717ebb6c'
     if hf != hash_f:
         raise (Exception(f'Final hash faiuled !{hash_f} != {hf}'))
 

@@ -10,7 +10,7 @@
             "justMyCode": true,
             "args": [
                 "--analysis",
-                "C:/work/pcr-report/example/231206_GN005006-017/231206_GN005006-017_20231206_140440_681.csv",
+                "C:/work/pcr-report/example/240108_GN005006-024/240108_GN005006-024_20240108_143316_407.csv",
                 "--cfg",
                 "C:/work/pcr-report/data"
             ]

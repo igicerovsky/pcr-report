@@ -17,6 +17,10 @@
 
 ## DONE
 
+## KW01-08.01.2024
+
+- plasmid and reference control shall not be for information only, value shall not be striked through
+
 ### KW49-11.12.2023
 
 - 'for information only' formatting
