@@ -108,7 +108,6 @@ def gui(config_dir, init_folder):
                       padx=10, pady=10)
     window.mainloop()
 
-    # main_report(analysis_file.get(), config_folder.get())
     return analysis_file.get()
 
 
@@ -136,10 +135,6 @@ def main():
     except Exception as e:
         print(e)
         print('Failed!')
-    # if args.analysis:
-    #     main_report(analysis_filepath, config_dir)
-    # else:
-    #     gui(config_dir)
 
 
 if __name__ == "__main__":

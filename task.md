@@ -2,6 +2,28 @@
 
 ## TODO
 
+- setup
+- versioning & changelog
+
+- Next steps ???
+
+## DONE
+
+## KW03-15.01.2024
+
+- in progress..
+  
+## KW02-08.01.2024
+
+- new version deployment
+- plasmid and reference control shall not be for information only, value shall not be strike through
+- bug fix: rm type column from final results
+
+### KW49-11.12.2023
+
+- 'for information only' formatting
+- Sample information limits 'for information only'
+- GUI refactoring - display Select Folder dialog only for input, use stdout for output
 - Specification togetther with Fabian & Anja
   - Config folder content
   - Decimal digits format
@@ -13,21 +35,7 @@
       - detailed `230811_GN004773-019-data_analysis.xlsx`
   - Configuration (files, config)
     - pre-dilutions file format
-- Next steps ???
-
-## DONE
-
-## KW01-08.01.2024
-
-- plasmid and reference control shall not be for information only, value shall not be striked through
-- bug fix: rm type column from final results
-
-### KW49-11.12.2023
-
-- 'for information only' formatting
-- Sample information limits 'for information only'
-- GUI refactoring - display Select Folder dialog only for input, use stdout for output
-
+  
 ### KW49-4.12.2023
 
 - GUI: output
