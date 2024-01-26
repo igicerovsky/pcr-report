@@ -19,11 +19,22 @@ MAX_METHOD_NAME_INFO = 'Upper info [vg/μl]'
 
 
 class CheckLevel(int, Enum):
+    """
+    Enumeration representing the level of a check.
+
+    Attributes:
+        WARNING (int): Represents a warning level check.
+        ERROR (int): Represents an error level check.
+    """
     WARNING = 1
     ERROR = 0
 
 
 class CheckType(str, Enum):
+    """
+    Enumeration class representing different types of checks.
+    """
+
     METHOD = 'method'
     NEGATIVE_CONTROL = 'negative control'
     PLASMID_CONTROL = 'plasmid_control'
@@ -31,6 +42,20 @@ class CheckType(str, Enum):
 
 
 def check_limits(min: float, max: float, val: float, txt: str, ex=False):
+    """
+    Checks if a given value falls within the specified minimum and maximum limits.
+
+    Args:
+        min (float): The minimum limit.
+        max (float): The maximum limit.
+        val (float): The value to be checked.
+        txt (str): A text description of the value.
+        ex (bool, optional): If True, includes the value and limits in the comment. 
+                             Defaults to False.
+
+    Returns:
+        str: A comment indicating if the value is below or above the limits.
+    """
     comment = None
     if val < min:
         if ex:
@@ -46,6 +71,21 @@ def check_limits(min: float, max: float, val: float, txt: str, ex=False):
 
 
 def check_wlimits(min3s, min2s, max2s, max3s, val, txt, ex=False):
+    """
+    Check if a value falls within specified limits and return a comment.
+
+    Args:
+        min3s (float): The lower limit for the range.
+        min2s (float): The upper limit for the lower range.
+        max2s (float): The lower limit for the upper range.
+        max3s (float): The upper limit for the range.
+        val (float): The value to be checked.
+        txt (str): The comment to be returned if the value falls within the limits.
+        ex (bool, optional): Whether to include the actual values in the comment. Defaults to False.
+
+    Returns:
+        str: The comment if the value falls within the limits, otherwise None.
+    """
     comment = None
     if val > min3s and val < min2s:
         if ex:
@@ -63,12 +103,20 @@ def check_wlimits(min3s, min2s, max2s, max3s, val, txt, ex=False):
 
 
 def control_check_fn(s, dc_limits):
+    """
+    Perform a control check based on the given sample and dc_limits.
+
+    Args:
+        s (Sample): The sample to perform the control check on.
+        dc_limits (dict): The dictionary containing the control limits.
+    """
     c = control_check_routing(dc_limits, s[SAMPLE_TYPE_NAME],
                               s[MEAN_NAME], s.name[1])
     return c[0]
 
 
 def warning_check_fn(s, dc_limits):
+    """ Perform a warning check based on the given sample and dc_limits."""
     c = control_check_routing(dc_limits, s[SAMPLE_TYPE_NAME],
                               s[MEAN_NAME], s.name[1])
     return c[1]
@@ -145,6 +193,8 @@ def check_limits_i(val: float,
                    min: float, max: float,
                    min_i: float, max_i: float,
                    txt: str, ex=False):
+    """ Check limits
+    """
     comment = None
     if min_i and val > min_i and val < min:
         comment = '{}'.format(WARN_INFO)
@@ -289,6 +339,7 @@ def cv_fn(mean_val: float, std_val: float, stype: str):
 
 
 def add_comment(s, n):
+    """Add comment to string"""
     if s and n:
         s += ', ' + n
     elif not s and n:
@@ -297,6 +348,7 @@ def add_comment(s, n):
 
 
 def concat_comments(x):
+    """Concatenate comments"""
     s = None
     s = add_comment(s, x[VALUE_CHECK_NAME])
     s = add_comment(s, x[DROPLET_CHECK_NAME])
