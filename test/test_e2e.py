@@ -1,3 +1,5 @@
+""" PCR testing module
+"""
 import os
 import hashlib
 
@@ -15,6 +17,7 @@ from pcrep.final import make_final
 
 
 def e2e(analysis_filepath, config_dir):
+    """Test end-to-end runner."""
     init_config(config_dir)
 
     parsedc = parse_analysis_filepath(analysis_filepath)
@@ -50,6 +53,7 @@ def e2e(analysis_filepath, config_dir):
 
 
 def test_e2e():
+    """Test end-to-end process."""
     analysis_filepath = './example/231128_GN005006-013_IDT-ITR_HT2/231128_GN005006-013_20231128_123248_019.csv'
     config_dir = './data'
 

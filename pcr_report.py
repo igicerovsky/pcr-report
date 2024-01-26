@@ -1,3 +1,21 @@
+"""
+This script generates a PCR report based on an analysis file and configuration parameters.
+The main_report function processes the analysis file, applies data transformations, and generates the report.
+The Gui class provides a graphical user interface for selecting the analysis file and configuration folder.
+The gui_fn function prompts for missing arguments using the GUI.
+The main function parses command line arguments, calls the GUI if necessary, and invokes the main_report function.
+
+Usage:
+    python pcr_report.py [--cfg CONFIG_DIR] [--analysis ANALYSIS_FILE] [--ifld INIT_FOLDER]
+
+Arguments:
+    --cfg CONFIG_DIR: The directory containing the configuration files and parameters. Default is './data'.
+    --analysis ANALYSIS_FILE: The path to the analysis file. If not provided, the GUI will be used to select the file.
+    --ifld INIT_FOLDER: The initial folder to open in the file dialog when selecting the analysis file.
+
+Returns:
+    None
+"""
 from os import path, getcwd
 import argparse
 
@@ -13,9 +31,21 @@ from pcrep.pcrep import init_data, process_data, read_limits, read_conc
 from pcrep.check import concat_comments
 from pcrep.xlswriter import analysis_to_excel, final_to_excel
 from pcrep.final import make_final
+from pcrep.typing import PathLikeOrNone
 
 
-def main_report(analysis_filepath, config_dir):
+def main_report(analysis_filepath: PathLikeOrNone, config_dir:PathLikeOrNone):
+    """
+    Generates a PCR report based on the analysis file and configuration directory provided.
+
+    Args:
+        analysis_filepath (PathLikeOrNone): The path to the analysis file.
+        config_dir (PathLikeOrNone): The path to the configuration directory.
+
+    Returns:
+        None
+    """
+    
     print(f'Analysis file {analysis_filepath}')
     print(f'Configuration directory {config_dir}')
 
@@ -50,68 +80,89 @@ def main_report(analysis_filepath, config_dir):
     print('Done.')
 
 
-def browse_analysis(init_folder):
-    initialdir = getcwd()
-    if init_folder:
-        initialdir = init_folder
-    filename = filedialog.askopenfilename(initialdir=initialdir,
-                                          title="Select a PCR Analysis File",
-                                          filetypes=[('CSV Files', '*.csv')])
-    if filename:
-        global analysis_file, entry_analysis
-        analysis_file.set(filename)
-        entry_analysis.update()
-        global window
-        window.destroy()
+class Gui:
+    """ GUI class
+    """
+
+    def __init__(self, window, config_dir: PathLikeOrNone, init_folder: PathLikeOrNone) -> None:
+        self.window = window
+        self.window.title('HAMILTON Analysis')
+        self.window.geometry("800x80")
+        self.init_folder = init_folder
+
+        self.analysis_file = StringVar()
+        self.analysis_file.set('')
+        self.config_folder = StringVar()
+        if config_dir:
+            self.config_folder.set(config_dir)
+        else:
+            self.config_folder.set(path.join(getcwd(), 'data'))
+
+        button_analysis = Button(self.window, text="Browse Analysis File",
+                                 command=lambda: self.browse_analysis())
+        button_analysis.grid(column=0, row=0)
+
+        self.entry_analysis = Entry(textvariable=self.analysis_file,
+                                    state=DISABLED, width=110)
+        self.entry_analysis.grid(row=0, column=1,
+                                 padx=10, pady=10)
+
+        button_config = Button(self.window, text="Browse Config Folder",
+                               command=lambda: self.browse_config())
+        button_config.grid(column=0, row=1)
+        entry_config = Entry(textvariable=self.config_folder,
+                             state=DISABLED, width=110)
+        entry_config.grid(row=1, column=1,
+                          padx=10, pady=10)
+
+    def browse_analysis(self) -> None:
+        """ Browse analysis file name
+        """
+        initialdir = getcwd()
+        if self.init_folder:
+            initialdir = self.init_folder
+        filename = filedialog.askopenfilename(initialdir=initialdir,
+                                              title="Select a PCR Analysis File",
+                                              filetypes=[('CSV Files', '*.csv')])
+        if filename:
+            self.analysis_file.set(filename)
+            self.entry_analysis.update()
+            self.window.destroy()
+
+    def browse_config(self) -> None:
+        """ Browse config folder
+        """
+        dirname = filedialog.askdirectory(initialdir=self.config_folder.get(),
+                                          title="Select a Config Folder")
+
+        if dirname:
+            self.config_folder.set(dirname)
+
+    def res(self) -> None:
+        """ Result
+        """
+        return self.analysis_file.get(), self.config_folder.get()
 
 
-def browse_config(init_folder):
-    dirname = filedialog.askdirectory(initialdir=init_folder,
-                                      title="Select a Config Folder")
-
-    if dirname:
-        global config_folder
-        config_folder.set(dirname)
-
-
-def gui(config_dir, init_folder):
-    global window
+def gui_fn(config_dir: PathLikeOrNone, init_folder: PathLikeOrNone) -> PathLikeOrNone:
+    """ GUI dialaog for data input
+    """
     window = Tk()
-    window.title('PCR Analysis')
-    window.geometry("800x100")
-
-    global analysis_file
-    analysis_file = StringVar()
-    analysis_file.set('...')
-    global config_folder
-    config_folder = StringVar()
-    if config_dir:
-        config_folder.set(config_dir)
-    else:
-        config_folder.set(path.join(getcwd(), 'data'))
-
-    global entry_analysis
-    entry_analysis = Entry(textvariable=analysis_file,
-                           state=DISABLED, width=110)
-    entry_analysis.grid(row=0, column=1,
-                        padx=10, pady=10)
-
-    button_analysis = Button(window, text="Browse Analysis File",
-                             command=lambda: browse_analysis(init_folder))
-    button_analysis.grid(column=0, row=0)
-
-    button_config = Button(window, text="Browse Config Folder",
-                           command=browse_config)
-    button_config.grid(column=0, row=1)
-    entry_config = Entry(textvariable=config_folder, state=DISABLED, width=110)
-    entry_config.grid(row=1, column=1,
-                      padx=10, pady=10)
+    gui = Gui(window, config_dir, init_folder)
     window.mainloop()
-
-    return analysis_file.get()
+    return gui.res()
 
 
 def main():
+    """
+    This is the main function of the PCR report script.
+    It parses command line arguments, prompts for missing arguments using a GUI,
+    and calls the main_report function to generate the report.
+
+    Returns:
+        None
+    """
+
     parser = argparse.ArgumentParser()
     parser.add_argument('--cfg', help="config and params directory",
                         default='./data')
@@ -125,8 +176,13 @@ def main():
     init_folder = args.ifld
 
     if not analysis_filepath:
-        analysis_filepath = gui(config_dir, init_folder)
-    if not analysis_filepath:
+        analysis_filepath, config_dir = gui_fn(config_dir, init_folder)
+    if not analysis_filepath or not config_dir:
+        # Handle missing arguments using GUI
+        analysis_filepath, config_dir = gui_fn(config_dir, init_folder)
+
+    # Call the main_report function to generate the report
+    main_report(analysis_filepath, config_dir)
         print("Canceled.")
         return None
 
