@@ -23,7 +23,6 @@ jobs:
         pip install pandas
         pip install tabulate
         pip install xlsxwriter
-        pip install tkinter
     - name: Analysing the code with pylint
       run: |
         pylint $(git ls-files '*.py')
