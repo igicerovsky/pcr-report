@@ -34,7 +34,7 @@ from pcrep.final import make_final
 from pcrep.typing import PathLikeOrNone
 
 
-def main_report(analysis_filepath: PathLikeOrNone, config_dir:PathLikeOrNone):
+def main_report(analysis_filepath: PathLikeOrNone, config_dir: PathLikeOrNone):
     """
     Generates a PCR report based on the analysis file and configuration directory provided.
 
@@ -45,7 +45,7 @@ def main_report(analysis_filepath: PathLikeOrNone, config_dir:PathLikeOrNone):
     Returns:
         None
     """
-    
+
     print(f'Analysis file {analysis_filepath}')
     print(f'Configuration directory {config_dir}')
 
@@ -183,8 +183,8 @@ def main():
 
     # Call the main_report function to generate the report
     main_report(analysis_filepath, config_dir)
-        print("Canceled.")
-        return None
+    print("Canceled.")
+    return None
 
     try:
         main_report(analysis_filepath, config_dir)

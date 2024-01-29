@@ -1,3 +1,5 @@
+"""Final report generation.
+"""
 from functools import reduce
 import pandas as pd
 
@@ -13,6 +15,17 @@ DC_CONTROLS = {'IDT': {True: 'valid', False: 'not valid'},
 
 
 def get_sample(df, samnple_num, target_id=None):
+    """
+    Get a sample from a DataFrame based on the sample number and target ID.
+
+    Parameters:
+        df (DataFrame): The input DataFrame.
+        samnple_num (int): The sample number.
+        target_id (str, optional): The target ID. Defaults to None.
+
+    Returns:
+        DataFrame: The selected sample from the DataFrame.
+    """
     idx = pd.IndexSlice
     if target_id:
         return df.loc[idx[samnple_num, target_id, :], :]
@@ -21,15 +34,35 @@ def get_sample(df, samnple_num, target_id=None):
 
 
 def add_to(first, second, delim):
+    """
+    Concatenates two strings with a delimiter in between.
+
+    Args:
+        first (str): The first string.
+        second (str): The second string.
+        delim (str): The delimiter to be placed between the strings.
+
+    Returns:
+        str: The concatenated string with the delimiter.
+
+    """
     if first:
         return first + delim + second
     elif second:
         return second
-    else:
-        return None
+    return None
 
 
 def isvalid_nc(s):
+    """
+    Check if the given data is valid for the specified sample.
+
+    Args:
+        s (pandas.DataFrame): The input data.
+
+    Returns:
+        tuple: A tuple containing the validity status, the corresponding value, and any comments.
+    """
     comment = None
     val = s['mean [vg/ml]'].values[0]
     target = s.index.get_level_values(TARGET_NAME)[0]
@@ -48,7 +81,22 @@ def isvalid_nc(s):
 
 
 def isvalid_prs(s):
-    # display(s)
+    """
+    Check if the given data is valid for plasmid, reference, sample).
+
+    Args:
+        s (pandas.DataFrame): The input data containing the following columns:
+            - mean [vg/ml]: The mean value in vg/ml.
+            - droplet_check: The droplet check result.
+            - method_check: The method check result.
+            - cv_check: The CV check result.
+            - warning_check: The warning check result.
+    Returns:
+        tuple: A tuple containing the following elements:
+            - valid (bool): True if the data is valid, False otherwise.
+            - ret: The mean value in vg/ml.
+            - comment: Any comment or additional information regarding the validity of the data.
+    """
     ret = s['mean [vg/ml]'].values[0]
     comment = None
     valid = True
@@ -71,6 +119,23 @@ def isvalid_prs(s):
 
 
 def process_sample(s):
+    """
+    Process a sample and return a dictionary containing the sample information and results.
+
+    Args:
+        s (pd.DataFrame): The sample data as a pandas DataFrame.
+
+    Returns:
+        dict: A dictionary containing the processed sample information and results.
+            The dictionary has the following keys:
+            - 'id': The sample ID.
+            - 'target': The target(s) of the sample.
+            - 'type': The sample type.
+            - 'name': The sample name.
+            - 'result {target} [vg/ml]': The result value for each target.
+            - 'comment {target}': The comment for each target.
+
+    """
     idxs = pd.IndexSlice
     targets = s.index.get_level_values(TARGET_NAME).unique()
     target = '/'.join(targets)
@@ -108,6 +173,16 @@ def process_sample(s):
 
 
 def make_final(df, samples):
+    """
+    Create a final DataFrame containing processed sample results.
+
+    Args:
+        df (pandas.DataFrame): The original DataFrame containing the samples.
+        samples (list): A list of sample names to process.
+
+    Returns:
+        pandas.DataFrame: The final DataFrame with processed sample results.
+    """
     dff = pd.DataFrame()
     for n in samples:
         s = get_sample(df, n)

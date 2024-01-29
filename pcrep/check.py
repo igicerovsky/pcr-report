@@ -2,8 +2,10 @@
 """
 
 from enum import Enum
-from .constants import SAMPLE_TYPE_NAME, CONC_NAME, DROPLET_COLNAME, DROPLET_THRESHOLD, MEAN_NAME  # type: ignore
-from .constants import CONTROL_CHECK_NAME, WARNING_CHECK_NAME, CV_CHECK_NAME, DROPLET_CHECK_NAME, VALUE_CHECK_NAME
+from .constants import (SAMPLE_TYPE_NAME, CONC_NAME, DROPLET_COLNAME,
+                        DROPLET_THRESHOLD, MEAN_NAME)
+from .constants import (CONTROL_CHECK_NAME, WARNING_CHECK_NAME, CV_CHECK_NAME,
+                        DROPLET_CHECK_NAME, VALUE_CHECK_NAME)
 
 METHOD_LIMIT_MULTIPLIER_NEGATIVE_CONTROL = 0.1
 MIN_3S_NAME = 'lower 3s action'
@@ -41,7 +43,7 @@ class CheckType(str, Enum):
     CV = 'CV'
 
 
-def check_limits(min: float, max: float, val: float, txt: str, ex=False):
+def check_limits(lmin: float, lmax: float, val: float, txt: str, ex=False):
     """
     Checks if a given value falls within the specified minimum and maximum limits.
 
@@ -57,16 +59,16 @@ def check_limits(min: float, max: float, val: float, txt: str, ex=False):
         str: A comment indicating if the value is below or above the limits.
     """
     comment = None
-    if val < min:
+    if val < lmin:
         if ex:
-            comment = '{} {:.2f} < {}'.format(txt, val, min)
+            comment = f"{txt} {val:.2f} < {lmin}"
         else:
-            comment = '<{}'.format(txt)
-    elif val > max:
+            comment = f"<{txt}"
+    elif val > lmax:
         if ex:
-            comment = '{} {:.2f} > {}'.format(txt, val, max)
+            comment = f"{txt} {val:.2f} > {lmax}"
         else:
-            comment = '>{}'.format(txt)
+            comment = f">{txt}"
     return comment
 
 
@@ -87,16 +89,14 @@ def check_wlimits(min3s, min2s, max2s, max3s, val, txt, ex=False):
         str: The comment if the value falls within the limits, otherwise None.
     """
     comment = None
-    if val > min3s and val < min2s:
+    if min3s < val < min2s:
         if ex:
-            comment = '{} {:0.2f} < {:.2f} < {:.2f}'.format(
-                txt, min3s, val, min2s)
+            comment = f"{txt} {min3s:.2f} < {val:.2f} < {min2s:.2f}"
         else:
             comment = txt
-    elif val > max2s and val < max3s:
+    elif max2s < val < max3s:
         if ex:
-            comment = '{} {:.2f} < {:.2f} < {:.2f}'.format(
-                txt, max2s, val, max3s)
+            comment = f"{txt} {max2s:.2f} < {val:.2f} < {max3s:.2f}"
         else:
             comment = txt
     return comment
@@ -122,7 +122,7 @@ def warning_check_fn(s, dc_limits):
     return c[1]
 
 
-def check_control(limits, val, type):
+def check_control(limits, val, sample_type):
     """Check control (reference or plasmid)
 
     Parameters:
@@ -133,7 +133,8 @@ def check_control(limits, val, type):
     type: str
         Control type
     """
-    r3s = check_limits(limits[MIN_3S_NAME], limits[MAX_3S_NAME], val, type)
+    r3s = check_limits(limits[MIN_3S_NAME],
+                       limits[MAX_3S_NAME], val, sample_type)
     r2s = None
     USE_2S3S = False  # not using <2s, 3s> interval check now
     if not r3s and USE_2S3S:
@@ -145,7 +146,7 @@ def check_control(limits, val, type):
     return (r3s, r2s)
 
 
-def control_check_routing(limitsdc, type, val, target_id):
+def control_check_routing(limitsdc, sample_type, val, target_id):
     """Routing of CONTROL checks
 
     Parameters:
@@ -160,12 +161,12 @@ def control_check_routing(limitsdc, type, val, target_id):
         Method target one of target_id from method_limits.csv
     """
     ret = (None, None)
-    if type == 'rc':
+    if sample_type == 'rc':
         ret = check_control(
-            limitsdc['reference_control'].loc[target_id], val, type)
-    elif type == 'pc':
+            limitsdc['reference_control'].loc[target_id], val, sample_type)
+    elif sample_type == 'pc':
         ret = check_control(
-            limitsdc['plasmid_control'].loc[target_id], val, type)
+            limitsdc['plasmid_control'].loc[target_id], val, sample_type)
 
     return ret
 
@@ -183,9 +184,9 @@ def method_check_nc(thr, val, ex=False):
     comment = None
     if val > thr:
         if ex:
-            comment = 'nc {:.2f} > {}'.format(val, thr)
+            comment = f'nc {val:.2f} > {thr}'
         else:
-            comment = 'nc > {}'.format(thr)
+            comment = f'nc > {thr}'
     return comment
 
 
@@ -197,19 +198,19 @@ def check_limits_i(val: float,
     """
     comment = None
     if min_i and val > min_i and val < min:
-        comment = '{}'.format(WARN_INFO)
+        comment = f'{WARN_INFO}'
     elif val < min:
         if ex:
-            comment = '{} {:.2f} < {}'.format(txt, val, min)
+            comment = f'{txt} {val:.2f} < {min}'
         else:
-            comment = '<{}'.format(txt)
+            comment = f'<{txt}'
     elif max_i and val < max_i and val > max:
-        comment = '{}'.format(WARN_INFO)
+        comment = f'{WARN_INFO}'
     elif val > max:
         if ex:
-            comment = '{} {:.2f} > {}'.format(txt, val, max)
+            comment = f'{txt} {val:.2f} > {max}'
         else:
-            comment = '>{}'.format(txt)
+            comment = f'>{txt}'
     return comment
 
 
@@ -237,7 +238,7 @@ def method_check_fn(s, dc_limits: dict):
                                 s[CONC_NAME], s.name[1])
 
 
-def method_check_routing(limits, type, val, target_id):
+def method_check_routing(limits, sample_type, val, target_id):
     """Routing of METHOD checks
 
     Parameters:
@@ -252,15 +253,15 @@ def method_check_routing(limits, type, val, target_id):
         Method target one of target_id from method_limits.csv
     """
     ret = None
-    if type == 'nc':
+    if sample_type in ['nc']:
         # order of magnitude lower than negative control limits
         t = limits.loc[target_id][MIN_METHOD_NAME] * \
             METHOD_LIMIT_MULTIPLIER_NEGATIVE_CONTROL
         ret = method_check_nc(t, val)
-    elif type == 'rc' or type == 'pc' or type == 's':
+    elif sample_type in ['rc', 'pc', 's']:
         ret = method_check_s(limits.loc[target_id], val, 'LOQ')
     else:
-        raise Exception(f'Invalid sample type {type} in check_routing!')
+        raise Exception(f'Invalid sample type {sample_type} in check_routing!')
 
     return ret
 
@@ -316,7 +317,7 @@ def cv_check(val, thr=CV_THRESHOLD, ex=False):
     return comment
 
 
-def cv_fn(mean_val: float, std_val: float, stype: str):
+def cv_fn(mean_val: float, std_val: float, sample_type: str):
     """Compute Coefficient of variation
 
     Parameters:
@@ -330,7 +331,7 @@ def cv_fn(mean_val: float, std_val: float, stype: str):
     """
     cv = float("nan")
     # cv is not applied to negative samples
-    if stype == 'nc':
+    if sample_type == 'nc':
         return cv
 
     if isinstance(mean_val, float) and mean_val != 0.0:
