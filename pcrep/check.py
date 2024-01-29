@@ -191,24 +191,24 @@ def method_check_nc(thr, val, ex=False):
 
 
 def check_limits_i(val: float,
-                   min: float, max: float,
+                   vmin: float, vmax: float,
                    min_i: float, max_i: float,
                    txt: str, ex=False):
     """ Check limits
     """
     comment = None
-    if min_i and val > min_i and val < min:
+    if min_i and vmin < val < min_i:
         comment = f'{WARN_INFO}'
-    elif val < min:
+    elif val < vmin:
         if ex:
-            comment = f'{txt} {val:.2f} < {min}'
+            comment = f'{txt} {val:.2f} < {vmin}'
         else:
             comment = f'<{txt}'
-    elif max_i and val < max_i and val > max:
+    elif max_i and max_i < val < vmax:
         comment = f'{WARN_INFO}'
-    elif val > max:
+    elif val > vmax:
         if ex:
-            comment = f'{txt} {val:.2f} > {max}'
+            comment = f'{txt} {val:.2f} > {vmax}'
         else:
             comment = f'>{txt}'
     return comment
@@ -291,10 +291,9 @@ def droplets_check(droplets_num: int, low_thr: int, ex: bool = False):
     comment = None
     if droplets_num < low_thr:
         if ex:
-            comment = 'droplets {:.0f} < {}'.format(
-                droplets_num, low_thr)
+            comment = f'droplets {droplets_num:.0f} < {low_thr}'
         else:
-            comment = 'droplets < {}'.format(low_thr)
+            comment = f'droplets < {low_thr}'
     return comment
 
 
@@ -311,9 +310,9 @@ def cv_check(val, thr=CV_THRESHOLD, ex=False):
     comment = None
     if val > thr:
         if ex:
-            comment = 'CV {:.1f} > {:.1f}'.format(val, thr)
+            comment = f'CV {val:.1f} > {thr:.1f}'
         else:
-            comment = 'CV>{:.0f}%'.format(thr)
+            comment = f'CV>{thr:.0f}%'
     return comment
 
 

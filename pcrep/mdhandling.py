@@ -29,7 +29,7 @@ def md2docx(pandoc_bin: PathLike, reference_doc: PathLike, md_filepath: PathLike
     """
 
     docx_path = path.splitext(md_filepath)[0] + '.docx'
-    print('Generating Word {} from {}'.format(docx_path, md_filepath))
+    print(f'Generating Word {docx_path} from {md_filepath}')
     report_dir = path.dirname(path.abspath(md_filepath))
     try:
         subprocess.run([pandoc_bin, '-o', docx_path,
@@ -61,7 +61,8 @@ def md2pdf(pandoc_bin: PathLike, pdflatex_bin: PathLike, md_filepath: PathLike):
     Notes
     -----
     This function requires Pandoc and a PDF engine (e.g., pdflatex) to be installed on the system.
-    The converted PDF file will be saved in the same directory as the input Markdown file, with the same name but with a .pdf extension.
+    The converted PDF file will be saved in the same directory as the input Markdown file,
+    with the same name but with a .pdf extension.
     """
 
     pdf_path = Path(md_filepath).with_suffix('.pdf')

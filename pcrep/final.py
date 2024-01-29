@@ -48,7 +48,7 @@ def add_to(first, second, delim):
     """
     if first:
         return first + delim + second
-    elif second:
+    if second:
         return second
     return None
 

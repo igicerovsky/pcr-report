@@ -28,9 +28,10 @@ from tkinter import filedialog
 
 from pcrep.config import init_config
 from pcrep.parse_input import parse_analysis_filepath
-from pcrep.constants import WELL_RESULT_NAME, SAMPLE_ID_NAME, MEAN_NAME, STDE_NAME, DIL_FINAL_FACTOR_NAME
-from pcrep.constants import CONC_NAME, CV_COLNAME, SAMPLE_TYPE_NAME, DROPLET_COLNAME, COMMENTS_NAME
-from pcrep.constants import POSITIVES_NAME, NEGATIVES_NAME, SAMPLE_NAME
+from pcrep.constants import (WELL_RESULT_NAME, SAMPLE_ID_NAME, MEAN_NAME, STDE_NAME,
+                             DIL_FINAL_FACTOR_NAME, CONC_NAME, CV_COLNAME, SAMPLE_TYPE_NAME,
+                             DROPLET_COLNAME, COMMENTS_NAME, POSITIVES_NAME, NEGATIVES_NAME,
+                             SAMPLE_NAME)
 from pcrep.pcrep import init_data, process_data, read_limits, read_conc
 from pcrep.check import concat_comments
 from pcrep.xlswriter import analysis_to_excel, final_to_excel
@@ -57,7 +58,7 @@ def main_report(analysis_filepath: PathLikeOrNone, config_dir: PathLikeOrNone):
 
     parsedc = parse_analysis_filepath(analysis_filepath)
     base_filepath = path.join(
-        parsedc['analysis_dir'], '{}_{}'.format(parsedc['date'], parsedc['gn']))
+        parsedc['analysis_dir'], f"{parsedc['date']}_{parsedc['gn']}")
     input_concentration_data = base_filepath + '_conc.xlsx'
     df_conc = read_conc(input_concentration_data)
 
@@ -190,6 +191,8 @@ def main():
     except (KeyError, ValueError, FileNotFoundError, ) as e:
         print(e)
         print('Failed!')
+
+    return None
 
 
 if __name__ == "__main__":

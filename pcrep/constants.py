@@ -1,3 +1,4 @@
+"""Constants for the pcrep package."""
 DIL_FINAL_FACTOR_NAME: str = 'final dilution factor'
 DIL_SAMPLE_DESCRIPTION_NAME: str = 'Sample name'
 DIL_TYPE_NAME: str = 'type'

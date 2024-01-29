@@ -6,7 +6,7 @@ import json
 CONFIG_FILENAME: str = 'config.json'
 
 
-config: dict = dict()
+config: dict = {}
 
 
 def init_config(config_dir):
@@ -39,6 +39,7 @@ def read_config(filename):
     k_type = ['AAV8', 'AAV9', 'default']
     with open(filename, encoding="utf-8") as json_config:
         items = json.load(json_config).items()
+        key, value = (None, None)
         for key, value in items:
             if key in keys:
                 config[key] = value
