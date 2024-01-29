@@ -29,8 +29,8 @@ def get_sample(df, samnple_num, target_id=None):
     idx = pd.IndexSlice
     if target_id:
         return df.loc[idx[samnple_num, target_id, :], :]
-    else:
-        return df.loc[idx[samnple_num, :, :], :]
+
+    return df.loc[idx[samnple_num, :, :], :]
 
 
 def add_to(first, second, delim):
@@ -139,9 +139,9 @@ def process_sample(s):
     idxs = pd.IndexSlice
     targets = s.index.get_level_values(TARGET_NAME).unique()
     target = '/'.join(targets)
-    id = int(s.index.get_level_values(SAMPLE_ID_NAME).unique()[0])
+    sample_id = int(s.index.get_level_values(SAMPLE_ID_NAME).unique()[0])
     stype = s['sample type'].array[0]
-    dc = {'id': id,
+    dc = {'id': sample_id,
           'target': target,
           'type': stype,
           'name': s['Sample'].array[0]
@@ -156,7 +156,7 @@ def process_sample(s):
                 comment = DC_CONTROLS[t][v[0]] + '; ' + v[2]
             # else:
             #     comment = DC_CONTROLS[t][v[0]]
-        elif stype == 'pc' or stype == 'rc':
+        elif stype in ('pc', 'rc'):
             v = isvalid_prs(s.loc[idxs[:, [t], :], :])
             comment = DC_CONTROLS[t][v[0]]
         elif stype == 's':

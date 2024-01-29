@@ -4,15 +4,19 @@ import os
 import hashlib
 
 import pandas as pd
+import os
+import hashlib
 
 from pcrep.config import init_config
 from pcrep.parse_input import parse_analysis_filepath
-from pcrep.constants import WELL_RESULT_NAME, SAMPLE_ID_NAME, MEAN_NAME, STDE_NAME, DIL_FINAL_FACTOR_NAME
-from pcrep.constants import CONC_NAME, CV_COLNAME, SAMPLE_TYPE_NAME, DROPLET_COLNAME, COMMENTS_NAME
-from pcrep.constants import POSITIVES_NAME, NEGATIVES_NAME, SAMPLE_NAME
 from pcrep.pcrep import init_data, process_data, read_limits, read_conc
 from pcrep.check import concat_comments
 from pcrep.final import make_final
+from pcrep.constants import (
+    WELL_RESULT_NAME, SAMPLE_ID_NAME, MEAN_NAME, STDE_NAME, DIL_FINAL_FACTOR_NAME,
+    CONC_NAME, CV_COLNAME, SAMPLE_TYPE_NAME, DROPLET_COLNAME, COMMENTS_NAME,
+    POSITIVES_NAME, NEGATIVES_NAME, SAMPLE_NAME
+)
 
 
 def e2e(analysis_filepath, config_dir):
@@ -23,9 +27,9 @@ def e2e(analysis_filepath, config_dir):
     base_filepath = os.path.join(
         parsedc['analysis_dir'], f"{parsedc['date']}_{parsedc['gn']}")
     input_concentration_data = base_filepath + '_conc.xlsx'
-    df_conc = read_conc(input_concentration_data)
 
-    df = init_data(analysis_filepath, df_conc)
+    df = init_data(analysis_filepath,
+                   read_conc(input_concentration_data))
     dc_limits = read_limits(config_dir)
     df = process_data(df, dc_limits)
 

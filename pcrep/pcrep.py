@@ -24,7 +24,8 @@ def read_conc(input_concentration_data: PathLike):
         input_concentration_data (str): Path to the Excel file containing the concentration data.
 
     Returns:
-        pandas.DataFrame: DataFrame containing the concentration data with the sample ID as the index.
+        pandas.DataFrame: DataFrame containing the concentration data
+        with the sample ID as the index.
     """
     df_conc = pd.read_excel(input_concentration_data)
     df_conc.set_index([SAMPLE_ID_NAME], inplace=True)

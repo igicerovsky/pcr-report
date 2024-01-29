@@ -182,17 +182,12 @@ def main():
     if not analysis_filepath:
         analysis_filepath, config_dir = gui_fn(config_dir, init_folder)
     if not analysis_filepath or not config_dir:
-        # Handle missing arguments using GUI
-        analysis_filepath, config_dir = gui_fn(config_dir, init_folder)
-
-    # Call the main_report function to generate the report
-    main_report(analysis_filepath, config_dir)
-    print("Canceled.")
-    return None
+        print("Canceled.")
+        return None
 
     try:
         main_report(analysis_filepath, config_dir)
-    except Exception as e:
+    except (KeyError, ValueError, FileNotFoundError, ) as e:
         print(e)
         print('Failed!')
 

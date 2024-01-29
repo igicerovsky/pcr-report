@@ -24,7 +24,7 @@ def parse_analysis_filepath(file_path):
         If pathname isn't a file exception is raised.
     """
     if not path.isfile(file_path):
-        raise Exception('Not an analysis file!')
+        raise FileExistsError('Not an analysis file!')
     split = path.split(file_path)
     s = re.split(r"[_.]", split[1])
     names = ['date', 'gn', 'dateex', 'time', 'n', 'ext']
