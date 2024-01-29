@@ -136,8 +136,8 @@ def check_control(limits, val, sample_type):
     r3s = check_limits(limits[MIN_3S_NAME],
                        limits[MAX_3S_NAME], val, sample_type)
     r2s = None
-    USE_2S3S = False  # not using <2s, 3s> interval check now
-    if not r3s and USE_2S3S:
+    use_2s3s = False  # not using <2s, 3s> interval check now
+    if not r3s and use_2s3s:
         txt = WARN_INFO
         r2s = check_wlimits(limits[MIN_3S_NAME], limits[MIN_2S_NAME],
                             limits[MAX_2S_NAME], limits[MAX_3S_NAME],
@@ -197,14 +197,14 @@ def check_limits_i(val: float,
     """ Check limits
     """
     comment = None
-    if min_i and vmin < val < min_i:
+    if min_i and min_i < val < vmin:
         comment = f'{WARN_INFO}'
     elif val < vmin:
         if ex:
             comment = f'{txt} {val:.2f} < {vmin}'
         else:
             comment = f'<{txt}'
-    elif max_i and max_i < val < vmax:
+    elif max_i and vmax < val < max_i:
         comment = f'{WARN_INFO}'
     elif val > vmax:
         if ex:
@@ -261,7 +261,7 @@ def method_check_routing(limits, sample_type, val, target_id):
     elif sample_type in ['rc', 'pc', 's']:
         ret = method_check_s(limits.loc[target_id], val, 'LOQ')
     else:
-        raise Exception(f'Invalid sample type {sample_type} in check_routing!')
+        raise KeyError(f'Invalid sample type {sample_type} in check_routing!')
 
     return ret
 
