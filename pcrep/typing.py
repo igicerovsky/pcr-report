@@ -1,3 +1,5 @@
+"""Typing definitions for PCRep.
+"""
 import os
 from typing import Union
 

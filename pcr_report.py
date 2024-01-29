@@ -1,17 +1,21 @@
 """
 This script generates a PCR report based on an analysis file and configuration parameters.
-The main_report function processes the analysis file, applies data transformations, and generates the report.
-The Gui class provides a graphical user interface for selecting the analysis file and configuration folder.
-The gui_fn function prompts for missing arguments using the GUI.
-The main function parses command line arguments, calls the GUI if necessary, and invokes the main_report function.
+The main_report function processes the analysis file, applies data transformations, and generates
+the report. The Gui class provides a graphical user interface for selecting the analysis file and
+configuration folder. The gui_fn function prompts for missing arguments using the GUI.
+The main function parses command line arguments, calls the GUI if necessary, and invokes the
+main_report function.
 
 Usage:
     python pcr_report.py [--cfg CONFIG_DIR] [--analysis ANALYSIS_FILE] [--ifld INIT_FOLDER]
 
 Arguments:
-    --cfg CONFIG_DIR: The directory containing the configuration files and parameters. Default is './data'.
-    --analysis ANALYSIS_FILE: The path to the analysis file. If not provided, the GUI will be used to select the file.
-    --ifld INIT_FOLDER: The initial folder to open in the file dialog when selecting the analysis file.
+    --cfg CONFIG_DIR: The directory containing the configuration files and parameters. Default is
+    './data'.
+    --analysis ANALYSIS_FILE: The path to the analysis file. If not provided, the GUI will be used
+    to select the file.
+    --ifld INIT_FOLDER: The initial folder to open in the file dialog when selecting the analysis
+    file.
 
 Returns:
     None
@@ -19,7 +23,7 @@ Returns:
 from os import path, getcwd
 import argparse
 
-from tkinter import *
+from tkinter import StringVar, Button, Entry, Tk, DISABLED
 from tkinter import filedialog
 
 from pcrep.config import init_config

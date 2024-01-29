@@ -8,14 +8,24 @@ from .constants import SAMPLE_ID_NAME, TARGET_ID_NAME  # type: ignore
 from .config import config  # type: ignore
 from .constants import CONC_NAME, DIL_FINAL_FACTOR_NAME, DIL_TYPE_NAME, DIL_SAMPLE_DESCRIPTION_NAME
 from .constants import FDL_NAME, SAMPLE_NAME, SAMPLE_TYPE_NAME, CV_COLNAME, TARGET_NAME
-from .constants import SAMPLE_NUM_NAME, WELL_RESULT_NAME, SAMPLE_ID_NAME
+from .constants import SAMPLE_NUM_NAME, WELL_RESULT_NAME
 from .constants import VALUE_CHECK_NAME, DROPLET_CHECK_NAME, MEAN_NAME, STDE_NAME
 from .constants import CONTROL_CHECK_NAME, WARNING_CHECK_NAME, CV_CHECK_NAME
 from .check import cv_fn, method_check_fn, droplets_check_fn
-from .check import control_check_fn, warning_check_fn, cv_check, concat_comments
+from .check import control_check_fn, warning_check_fn, cv_check
+from .typing import PathLike
 
 
-def read_conc(input_concentration_data: str):
+def read_conc(input_concentration_data: PathLike):
+    """
+    Read concentration data from an Excel file.
+
+    Args:
+        input_concentration_data (str): Path to the Excel file containing the concentration data.
+
+    Returns:
+        pandas.DataFrame: DataFrame containing the concentration data with the sample ID as the index.
+    """
     df_conc = pd.read_excel(input_concentration_data)
     df_conc.set_index([SAMPLE_ID_NAME], inplace=True)
     return df_conc
@@ -64,8 +74,7 @@ def process_data(df: pd.DataFrame, dc_limits: dict):
     """
     df.loc[:, [VALUE_CHECK_NAME]] = df.apply(
         lambda x: method_check_fn(x, dc_limits), axis=1)
-    df.loc[:, [DROPLET_CHECK_NAME]] = df.apply(
-        lambda x: droplets_check_fn(x), axis=1)
+    df.loc[:, [DROPLET_CHECK_NAME]] = df.apply(droplets_check_fn, axis=1)
 
     df.loc[:, [CONTROL_CHECK_NAME]] = df.apply(
         lambda x: control_check_fn(x, dc_limits), axis=1)
@@ -128,7 +137,7 @@ def multindex_dfi(df: pd.DataFrame):
     return df
 
 
-def read_limits(config_dir: str):
+def read_limits(config_dir: PathLike):
     """Read limits from data files
     """
     palsmid_control_limits = pd.read_csv(

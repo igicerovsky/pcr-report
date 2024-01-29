@@ -1,7 +1,21 @@
+""" This module contains functions to export data to excel using xlsxwriter.
+"""
 import pandas as pd
 
+from .typing import PathLike
 
-def analysis_to_excel(df: pd.DataFrame, filename: str):
+
+def analysis_to_excel(df: pd.DataFrame, filename: PathLike):
+    """
+    Export the analysis results stored in a pandas DataFrame to an Excel file.
+
+    Parameters:
+        df (pd.DataFrame): The DataFrame containing the analysis results.
+        filename (PathLike): The path and filename of the Excel file to be created.
+
+    Returns:
+        None
+    """
     # Create a Pandas Excel writer using XlsxWriter as the engine.
     writer = pd.ExcelWriter(filename, engine="xlsxwriter")
 
@@ -46,7 +60,17 @@ def analysis_to_excel(df: pd.DataFrame, filename: str):
     print(f'Analysis exported to excel as {filename}')
 
 
-def final_to_excel(df, filename):
+def final_to_excel(df: pd.DataFrame, filename: PathLike):
+    """
+    Export a pandas DataFrame to an Excel file using XlsxWriter as the engine.
+
+    Args:
+        df (pd.DataFrame): The DataFrame to be exported.
+        filename (PathLike): The path and filename of the Excel file.
+
+    Returns:
+        None
+    """
     # Create a Pandas Excel writer using XlsxWriter as the engine.
     writer = pd.ExcelWriter(filename, engine="xlsxwriter")
 
