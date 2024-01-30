@@ -88,9 +88,9 @@ def final_to_excel(df: pd.DataFrame, filename: PathLike):
     # as the index or headers or any cells that contain dates or datetimes.
 
     # Set the column width and format.
-    worksheet.set_column('D:D', 32)
-    worksheet.set_column('E:E', 18, fmt_dec2e)
-    worksheet.set_column('F:F', 24, fmt_dec2e)
+    worksheet.set_column('D:D', 18, fmt_dec2e)
+    worksheet.set_column('E:E', 24, fmt_dec2e)
+    worksheet.set_column('F:F', 32)
     worksheet.set_column('G:G', 32)
     worksheet.set_column('H:H', 32)
 
@@ -100,13 +100,13 @@ def final_to_excel(df: pd.DataFrame, filename: PathLike):
     rows = len(df.index)
 
     # Apply a conditional format to the required cell range.
+    worksheet.conditional_format(f'D2:D{rows}',
+                                 {'type':     'formula',
+                                  'criteria': '=SEARCH("information", $F2)>0',
+                                  'format':   format_strike})
     worksheet.conditional_format(f'E2:E{rows}',
                                  {'type':     'formula',
                                   'criteria': '=SEARCH("information", $G2)>0',
-                                  'format':   format_strike})
-    worksheet.conditional_format(f'F2:F{rows}',
-                                 {'type':     'formula',
-                                  'criteria': '=SEARCH("information", $H2)>0',
                                   'format':   format_strike})
 
     # Close the Pandas Excel writer and output the Excel file.
