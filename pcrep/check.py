@@ -72,15 +72,13 @@ def check_limits(lmin: float, lmax: float, val: float, txt: str, ex=False):
     return comment
 
 
-def check_wlimits(min3s, min2s, max2s, max3s, val, txt, ex=False):
+def check_wlimits(lim3s, lim2s, val, txt, ex=False):
     """
     Check if a value falls within specified limits and return a comment.
 
     Args:
-        min3s (float): The lower limit for the range.
-        min2s (float): The upper limit for the lower range.
-        max2s (float): The lower limit for the upper range.
-        max3s (float): The upper limit for the range.
+        lim3s (float, float): 3sigma limits.
+        lim2s (float, float): 2sigma limits.
         val (float): The value to be checked.
         txt (str): The comment to be returned if the value falls within the limits.
         ex (bool, optional): Whether to include the actual values in the comment. Defaults to False.
@@ -89,14 +87,14 @@ def check_wlimits(min3s, min2s, max2s, max3s, val, txt, ex=False):
         str: The comment if the value falls within the limits, otherwise None.
     """
     comment = None
-    if min3s < val < min2s:
+    if lim3s[0] < val < lim2s[0]:
         if ex:
-            comment = f"{txt} {min3s:.2f} < {val:.2f} < {min2s:.2f}"
+            comment = f"{txt} {lim3s[0]:.2f} < {val:.2f} < {lim2s[0]:.2f}"
         else:
             comment = txt
-    elif max2s < val < max3s:
+    elif lim2s[1] < val < lim3s[1]:
         if ex:
-            comment = f"{txt} {max2s:.2f} < {val:.2f} < {max3s:.2f}"
+            comment = f"{txt} {lim2s[1]:.2f} < {val:.2f} < {lim3s[1]:.2f}"
         else:
             comment = txt
     return comment
@@ -139,8 +137,8 @@ def check_control(limits, val, sample_type):
     use_2s3s = False  # not using <2s, 3s> interval check now
     if not r3s and use_2s3s:
         txt = WARN_INFO
-        r2s = check_wlimits(limits[MIN_3S_NAME], limits[MIN_2S_NAME],
-                            limits[MAX_2S_NAME], limits[MAX_3S_NAME],
+        r2s = check_wlimits((limits[MIN_3S_NAME], limits[MAX_3S_NAME]),
+                            (limits[MIN_2S_NAME], limits[MAX_2S_NAME]),
                             val, txt)
 
     return (r3s, r2s)
@@ -191,24 +189,24 @@ def method_check_nc(thr, val, ex=False):
 
 
 def check_limits_i(val: float,
-                   vmin: float, vmax: float,
-                   min_i: float, max_i: float,
+                   method,  # vmin: float, vmax: float,
+                   info,  # min_i: float, max_i: float,
                    txt: str, ex=False):
     """ Check limits
     """
     comment = None
-    if min_i and min_i < val < vmin:
+    if info[0] and info[0] < val < method[0]:
         comment = f'{WARN_INFO}'
-    elif val < vmin:
+    elif val < method[0]:
         if ex:
-            comment = f'{txt} {val:.2f} < {vmin}'
+            comment = f'{txt} {val:.2f} < {method[0]}'
         else:
             comment = f'<{txt}'
-    elif max_i and vmax < val < max_i:
+    elif info[1] and method[1] < val < info[1]:
         comment = f'{WARN_INFO}'
-    elif val > vmax:
+    elif val > method[1]:
         if ex:
-            comment = f'{txt} {val:.2f} > {vmax}'
+            comment = f'{txt} {val:.2f} > {method[1]}'
         else:
             comment = f'>{txt}'
     return comment
@@ -219,8 +217,9 @@ def method_check_s(limits, val, txt=None):
     """
 
     return check_limits_i(val,
-                          limits[MIN_METHOD_NAME], limits[MAX_METHOD_NAME],
-                          limits[MIN_METHOD_NAME_INFO], limits[MAX_METHOD_NAME_INFO],
+                          (limits[MIN_METHOD_NAME], limits[MAX_METHOD_NAME]),
+                          (limits[MIN_METHOD_NAME_INFO],
+                           limits[MAX_METHOD_NAME_INFO]),
                           txt)
 
 
