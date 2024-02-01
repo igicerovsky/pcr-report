@@ -1,6 +1,5 @@
 """ PCR testing module
 """
-import os
 import hashlib
 
 import pandas as pd

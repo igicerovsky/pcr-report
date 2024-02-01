@@ -1,23 +1,22 @@
 """PCR reporting script
 """
-from pathlib import Path
-from typing import Union
 from os import path
 
 import pandas as pd
 
 from .config import config, init_config  # type: ignore
 from .constants import SAMPLE_ID_NAME, TARGET_ID_NAME  # type: ignore
-from .constants import (CONC_NAME, DIL_FINAL_FACTOR_NAME, DIL_TYPE_NAME, DIL_SAMPLE_DESCRIPTION_NAME,
-                        FDL_NAME, SAMPLE_NAME, SAMPLE_TYPE_NAME, CV_COLNAME, TARGET_NAME, COMMENTS_NAME,
-                        SAMPLE_NUM_NAME, WELL_RESULT_NAME, VALUE_CHECK_NAME, DROPLET_CHECK_NAME,
-                        MEAN_NAME, STDE_NAME, CONTROL_CHECK_NAME, WARNING_CHECK_NAME, CV_CHECK_NAME,
+from .constants import (CONC_NAME, DIL_FINAL_FACTOR_NAME, DIL_TYPE_NAME,
+                        DIL_SAMPLE_DESCRIPTION_NAME, FDL_NAME, SAMPLE_NAME,
+                        SAMPLE_TYPE_NAME, CV_COLNAME, TARGET_NAME, COMMENTS_NAME,
+                        SAMPLE_NUM_NAME, WELL_RESULT_NAME, VALUE_CHECK_NAME,
+                        DROPLET_CHECK_NAME, MEAN_NAME, STDE_NAME, CONTROL_CHECK_NAME,
+                        WARNING_CHECK_NAME, CV_CHECK_NAME,
                         DROPLET_COLNAME, POSITIVES_NAME, NEGATIVES_NAME)
 from .check import (cv_fn, method_check_fn, droplets_check_fn, concat_comments,
                     control_check_fn, warning_check_fn, cv_check)
 from .typing import PathLike
 from .parse_input import parse_analysis_filepath
-from .xlswriter import analysis_to_excel, final_to_excel
 from .final import make_final
 
 
@@ -173,7 +172,8 @@ def analyse(analysis_filepath: PathLike, config_dir: PathLike):
 
     Returns:
         Tuple[pandas.DataFrame, pandas.DataFrame]: A tuple containing two pandas DataFrames.
-            The first DataFrame contains the processed data, and the second DataFrame contains the final results.
+            The first DataFrame contains the processed data,
+            and the second DataFrame contains the final results.
     """
 
     print(f'Analysis file {analysis_filepath}')
@@ -192,7 +192,7 @@ def analyse(analysis_filepath: PathLike, config_dir: PathLike):
     df = process_data(df, dc_limits)
 
     dfc = df.copy()
-    df = df.assign(comments=df.apply(lambda x: concat_comments(x), axis=1))
+    df = df.assign(comments=df.apply(concat_comments, axis=1))
     col_order = [SAMPLE_NAME, DIL_FINAL_FACTOR_NAME, CONC_NAME,
                  WELL_RESULT_NAME, MEAN_NAME, STDE_NAME, CV_COLNAME, COMMENTS_NAME,
                  DROPLET_COLNAME, POSITIVES_NAME, NEGATIVES_NAME, SAMPLE_TYPE_NAME]
