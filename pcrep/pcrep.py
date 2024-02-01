@@ -1,19 +1,24 @@
 """PCR reporting script
 """
+from pathlib import Path
+from typing import Union
 from os import path
 
 import pandas as pd
 
+from .config import config, init_config  # type: ignore
 from .constants import SAMPLE_ID_NAME, TARGET_ID_NAME  # type: ignore
-from .config import config  # type: ignore
-from .constants import CONC_NAME, DIL_FINAL_FACTOR_NAME, DIL_TYPE_NAME, DIL_SAMPLE_DESCRIPTION_NAME
-from .constants import FDL_NAME, SAMPLE_NAME, SAMPLE_TYPE_NAME, CV_COLNAME, TARGET_NAME
-from .constants import SAMPLE_NUM_NAME, WELL_RESULT_NAME
-from .constants import VALUE_CHECK_NAME, DROPLET_CHECK_NAME, MEAN_NAME, STDE_NAME
-from .constants import CONTROL_CHECK_NAME, WARNING_CHECK_NAME, CV_CHECK_NAME
-from .check import cv_fn, method_check_fn, droplets_check_fn
-from .check import control_check_fn, warning_check_fn, cv_check
+from .constants import (CONC_NAME, DIL_FINAL_FACTOR_NAME, DIL_TYPE_NAME, DIL_SAMPLE_DESCRIPTION_NAME,
+                        FDL_NAME, SAMPLE_NAME, SAMPLE_TYPE_NAME, CV_COLNAME, TARGET_NAME, COMMENTS_NAME,
+                        SAMPLE_NUM_NAME, WELL_RESULT_NAME, VALUE_CHECK_NAME, DROPLET_CHECK_NAME,
+                        MEAN_NAME, STDE_NAME, CONTROL_CHECK_NAME, WARNING_CHECK_NAME, CV_CHECK_NAME,
+                        DROPLET_COLNAME, POSITIVES_NAME, NEGATIVES_NAME)
+from .check import (cv_fn, method_check_fn, droplets_check_fn, concat_comments,
+                    control_check_fn, warning_check_fn, cv_check)
 from .typing import PathLike
+from .parse_input import parse_analysis_filepath
+from .xlswriter import analysis_to_excel, final_to_excel
+from .final import make_final
 
 
 def read_conc(input_concentration_data: PathLike):
@@ -157,3 +162,44 @@ def read_limits(config_dir: PathLike):
                  'plasmid_control': palsmid_control_limits}
 
     return dc_limits
+
+
+def analyse(analysis_filepath: PathLike, config_dir: PathLike):
+    """Analyse the data in the given analysis file and write the results to an Excel file.
+
+    Args:
+        analysis_filepath (Union[str, Path]): Path to the analysis file.
+        config_dir (Union[str, Path]): Path to the configuration directory.
+
+    Returns:
+        Tuple[pandas.DataFrame, pandas.DataFrame]: A tuple containing two pandas DataFrames.
+            The first DataFrame contains the processed data, and the second DataFrame contains the final results.
+    """
+
+    print(f'Analysis file {analysis_filepath}')
+    print(f'Configuration directory {config_dir}')
+
+    init_config(config_dir)
+
+    parsedc = parse_analysis_filepath(analysis_filepath)
+    base_filepath = path.join(
+        parsedc['analysis_dir'], f"{parsedc['date']}_{parsedc['gn']}")
+    input_concentration_data = base_filepath + '_conc.xlsx'
+    df_conc = read_conc(input_concentration_data)
+
+    df = init_data(analysis_filepath, df_conc)
+    dc_limits = read_limits(config_dir)
+    df = process_data(df, dc_limits)
+
+    dfc = df.copy()
+    df = df.assign(comments=df.apply(lambda x: concat_comments(x), axis=1))
+    col_order = [SAMPLE_NAME, DIL_FINAL_FACTOR_NAME, CONC_NAME,
+                 WELL_RESULT_NAME, MEAN_NAME, STDE_NAME, CV_COLNAME, COMMENTS_NAME,
+                 DROPLET_COLNAME, POSITIVES_NAME, NEGATIVES_NAME, SAMPLE_TYPE_NAME]
+    df = df.loc[:, col_order]
+
+    samples = dfc.index.get_level_values(SAMPLE_ID_NAME).unique().values
+    samples.sort()
+    dff = make_final(dfc, samples)
+
+    return df, dff
