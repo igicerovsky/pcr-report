@@ -9,9 +9,19 @@
 
 ## DONE
 
+## KW06-0.5.02.2024
+
+- reference control limits update
+
+## KW05-29.01.2024
+
+- v0.1.0
+- pylint, refactoring
+- deployment (Fabian)
+
 ## KW03-15.01.2024
 
-- in progress..
+- github
   
 ## KW02-08.01.2024
 
